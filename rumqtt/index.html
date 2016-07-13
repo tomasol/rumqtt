@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `rumqtt` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, rumqtt">
+
+    <title>rumqtt - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'rumqtt', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>rumqtt</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/rumqtt/src/lib.rs.html#1-71' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>A fast, lock free Mqtt client implementation in Rust.</p>
+
+<p><strong>NOTE</strong>: Though (almost) everything in the spec is working, this crate is
+still in its early stages of development.
+So please be aware of breakages. If you don&#39;t find any of the APIs elegant
+or think that there is a
+better way of implementation, please don&#39;t hesitate to raise an
+issue/pullrequest.</p>
+
+<p>Below examples explain basic usage of this library</p>
+
+<h1 id='connecting-to-a-broker' class='section-header'><a href='#connecting-to-a-broker'>Connecting to a broker</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>client_options</span> <span class='op'>=</span> <span class='ident'>MqttOptions</span>::<span class='ident'>new</span>();
+
+<span class='comment'>//Specify client connection opthons and which broker to connect to</span>
+<span class='kw'>let</span> <span class='ident'>proxy_client</span> <span class='op'>=</span> <span class='ident'>client_options</span>.<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
+                                 .<span class='ident'>set_reconnect</span>(<span class='number'>5</span>)
+                                 .<span class='ident'>connect</span>(<span class='string'>&quot;localhost:1883&quot;</span>);
+
+<span class='comment'>//Connects to a broker and returns a `Publisher` and `Subscriber`</span>
+<span class='kw'>let</span> (<span class='ident'>publisher</span>, <span class='ident'>subscriber</span>) <span class='op'>=</span> <span class='ident'>proxy_client</span>.<span class='ident'>start</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Coudn&#39;t start&quot;</span>);</pre>
+
+<h1 id='publishing' class='section-header'><a href='#publishing'>Publishing</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>100</span> {
+    <span class='kw'>let</span> <span class='ident'>payload</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}. hello rust&quot;</span>, <span class='ident'>i</span>);
+    <span class='ident'>publisher</span>.<span class='ident'>publish</span>(<span class='string'>&quot;hello/rust&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level1</span>, <span class='ident'>payload</span>.<span class='ident'>into_bytes</span>());
+    <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>1</span>, <span class='number'>0</span>));
+}</pre>
+
+<h1 id='subscribing' class='section-header'><a href='#subscribing'>Subscribing</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>let</span> <span class='ident'>topics</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='string'>&quot;hello/+/world&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level0</span>),
+                  (<span class='string'>&quot;hello/rust&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level1</span>)];
+
+<span class='ident'>subscriber</span>.<span class='ident'>message_callback</span>(<span class='op'>|</span><span class='ident'>message</span><span class='op'>|</span> {
+       <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;@@@ {:?}&quot;</span>, <span class='ident'>message</span>);
+});
+<span class='ident'>subscriber</span>.<span class='ident'>subscribe</span>(<span class='ident'>topics</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Subscribe error&quot;</span>);</pre>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.MqttOptions.html'
+                                  title='rumqtt::MqttOptions'>MqttOptions</a></td>
+                           <td class='docblock short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.SslContext.html'
+                                  title='rumqtt::SslContext'>SslContext</a></td>
+                           <td class='docblock short'>
+                                
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.QoS.html'
+                                  title='rumqtt::QoS'>QoS</a></td>
+                           <td class='docblock short'>
+                                
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "rumqtt";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

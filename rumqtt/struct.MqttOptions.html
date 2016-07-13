@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `MqttOptions` struct in crate `rumqtt`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, MqttOptions">
+
+    <title>rumqtt::MqttOptions - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>rumqtt</a></p><script>window.sidebarCurrent = {name: 'MqttOptions', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>rumqtt</a>::<wbr><a class='struct' href=''>MqttOptions</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-270' class='srclink' href='../src/rumqtt/src/client.rs.html#24-38' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct MqttOptions {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-302' class='srclink' href='../src/rumqtt/src/client.rs.html#61-235' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></h4>
+<div class='docblock'><p>Creates a new <code>MqttOptions</code> object which is used to set connection
+options for new client. Below are defaults with which this object is
+created.</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><strong>client_id</strong></td>
+<td>Randomly generated</td>
+</tr>
+<tr>
+<td><strong>clean_session</strong></td>
+<td>true</td>
+</tr>
+<tr>
+<td><strong>keep_alive</strong></td>
+<td>5 secs</td>
+</tr>
+<tr>
+<td><strong>reconnect try</strong></td>
+<td>Doesn&#39;t try to reconnect</td>
+</tr>
+<tr>
+<td><strong>retransmit try time</strong></td>
+<td>60 secs</td>
+</tr>
+<tr>
+<td><strong>pub_q_len</strong></td>
+<td>50</td>
+</tr>
+<tr>
+<td><strong>sub_q_len</strong></td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+</div><h4 id='method.set_keep_alive' class='method'><code>fn <a href='#method.set_keep_alive' class='fnname'>set_keep_alive</a>(&amp;mut self, secs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Number of seconds after which client should ping the broker
+if there is no other data exchange</p>
+</div><h4 id='method.set_client_id' class='method'><code>fn <a href='#method.set_client_id' class='fnname'>set_client_id</a>(&amp;mut self, client_id: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Client id of the client. A random client id will be selected
+if you don&#39;t set one</p>
+</div><h4 id='method.set_clean_session' class='method'><code>fn <a href='#method.set_clean_session' class='fnname'>set_clean_session</a>(&amp;mut self, clean_session: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p><code>clean_session = true</code> instructs the broker to clean all the client
+state when it disconnects. Note that it is broker which is discarding
+the client state. But this client will hold its queues and attemts to
+to retransmit when reconnection happens.  (TODO: Verify this)</p>
+
+<p>When set <code>false</code>, broker will hold the client state and performs pending
+operations on the client when reconnection with same <code>client_id</code>
+happens.</p>
+
+<p>Hence <strong>make sure that you manually set <code>client_id</code> when
+<code>clean_session</code> is false</strong></p>
+</div><h4 id='method.set_user_name' class='method'><code>fn <a href='#method.set_user_name' class='fnname'>set_user_name</a>(&amp;mut self, username: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set <code>username</code> for broker to perform client authentication
+via <code>username</code> and <code>password</code></p>
+</div><h4 id='method.set_password' class='method'><code>fn <a href='#method.set_password' class='fnname'>set_password</a>(&amp;mut self, password: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set <code>password</code> for broker to perform client authentication
+vis <code>username</code> and <code>password</code></p>
+</div><h4 id='method.set_pub_q_len' class='method'><code>fn <a href='#method.set_pub_q_len' class='fnname'>set_pub_q_len</a>(&amp;mut self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>All the <code>QoS &gt; 0</code> publishes state will be saved to attempt
+retransmits incase ack from broker fails.</p>
+
+<p>If broker disconnects for some time, <code>Publisher</code> shouldn&#39;t throw error
+immediately during publishes. At the same time, <code>Publisher</code> shouldn&#39;t be
+allowed to infinitely push to the queue.</p>
+
+<p>Publish queue length specifies maximum queue capacity upto which
+<code>Publisher</code>
+can push with out blocking. Messages in this queue will published as
+soon as
+connection is reestablished and <code>Publisher</code> gets unblocked</p>
+</div><h4 id='method.set_sub_q_len' class='method'><code>fn <a href='#method.set_sub_q_len' class='fnname'>set_sub_q_len</a>(&amp;mut self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.set_reconnect' class='method'><code>fn <a href='#method.set_reconnect' class='fnname'>set_reconnect</a>(&amp;mut self, dur: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Time interval after which client should retry for new
+connection if there are any disconnections.
+By default, no retry will happen</p>
+</div><h4 id='method.set_will' class='method'><code>fn <a href='#method.set_will' class='fnname'>set_will</a>(&amp;mut self, will_topic: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, will_message: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set will for the client so that broker can send <code>will_message</code>
+on <code>will_topic</code> when this client ungracefully dies.</p>
+</div><h4 id='method.set_will_qos' class='method'><code>fn <a href='#method.set_will_qos' class='fnname'>set_will_qos</a>(&amp;mut self, qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set QoS for the will message</p>
+</div><h4 id='method.set_will_retain' class='method'><code>fn <a href='#method.set_will_retain' class='fnname'>set_will_retain</a>(&amp;mut self, retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set will retian so that future clients subscribing to will topic
+knows of client&#39;s death.</p>
+</div><h4 id='method.set_tls' class='method'><code>fn <a href='#method.set_tls' class='fnname'>set_tls</a>(&amp;mut self, ssl: <a class='struct' href='../rumqtt/struct.SslContext.html' title='rumqtt::SslContext'>SslContext</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>Set a TLS connection</p>
+</div><h4 id='method.connect' class='method'><code>fn <a href='#method.connect' class='fnname'>connect</a>&lt;A: <a class='trait' href='https://doc.rust-lang.org/nightly/std/net/addr/trait.ToSocketAddrs.html' title='std::net::addr::ToSocketAddrs'>ToSocketAddrs</a>&gt;(&amp;mut self, addr: A) -&gt; ProxyClient</code></h4>
+<div class='docblock'><p>Creates a new mqtt client with the broker address that you want
+to connect to. Along with connection details, this object holds
+all the state information of a connection.</p>
+
+<p><strong>NOTE</strong>: This should be the final call of <code>MqttOptions</code> method
+chaining</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>let</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>client_options</span>.<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
+                          .<span class='ident'>set_reconnect</span>(<span class='number'>5</span>)
+                          .<span class='ident'>set_client_id</span>(<span class='string'>&quot;my-client-id&quot;</span>)
+                          .<span class='ident'>set_clean_session</span>(<span class='boolvalue'>true</span>)
+                          .<span class='ident'>connect</span>(<span class='string'>&quot;localhost:1883&quot;</span>);</pre>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-300' class='srclink' href='../src/rumqtt/src/client.rs.html#40-58' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></h4>
+<div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
+</div></div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-284' class='srclink' href='../src/rumqtt/src/client.rs.html#23' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "rumqtt";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

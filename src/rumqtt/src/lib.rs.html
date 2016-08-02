@@ -116,8 +116,6 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
 </pre><pre class='rust '>
 
 <span class='doccomment'>//! A fast, lock free Mqtt client implementation in Rust.</span>
@@ -142,25 +140,23 @@
 <span class='doccomment'>//!                                   .set_client_id(&quot;qos0-stress-publish&quot;)</span>
 <span class='doccomment'>//!                                   .broker(&quot;broker.hivemq.com:1883&quot;);</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! // Connects to a broker and returns a `Publisher` and `Subscriber`</span>
-<span class='doccomment'>//! // `.message_callback` is optional if you don&#39;t want to subscribe to any</span>
-<span class='doccomment'>//! topic.</span>
-<span class='doccomment'>//! let (publisher, subscriber) =</span>
-<span class='doccomment'>//! MqttClient::new(client_options).message_callback(move |message| {</span>
+<span class='doccomment'>//! // Connects to a broker and returns a `Publisher` and `Subscriber`.</span>
+<span class='doccomment'>//! // `.message_callback` is optional if you don&#39;t want to subscribe</span>
+<span class='doccomment'>//! // to any topic.</span>
+<span class='doccomment'>//! let (publisher, subscriber) = MqttClient::new(client_options)</span>
+<span class='doccomment'>//! .message_callback(move |message| {</span>
 <span class='doccomment'>//!        println!(&quot;message --&gt; {:?}&quot;, message);</span>
-<span class='doccomment'>//!     }).start().expect(&quot;Coudn&#39;t start&quot;);</span>
+<span class='doccomment'>//! })</span>
+<span class='doccomment'>//! .start().expect(&quot;Coudn&#39;t start&quot;);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Publishing</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```ignore</span>
-<span class='doccomment'>//! for i in 0..100 {</span>
-<span class='doccomment'>//!     let payload = format!(&quot;{}. hello rust&quot;, i);</span>
-<span class='doccomment'>//! publisher.publish(&quot;hello/rust&quot;, QoS::Level1,</span>
-<span class='doccomment'>//! payload.into_bytes()).expect(&quot;Publish failure&quot;);</span>
-<span class='doccomment'>//!     thread::sleep(Duration::new(1, 0));</span>
-<span class='doccomment'>//! }</span>
+<span class='doccomment'>//! let payload = format!(&quot;{}. hello rust&quot;, i);</span>
+<span class='doccomment'>//! publisher.publish(&quot;hello/rust&quot;, QoS::Level1, payload.into_bytes())</span>
+<span class='doccomment'>//!          .expect(&quot;Publish failure&quot;);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Subscribing</span>

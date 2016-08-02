@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["MqttOptions",""]]});
+initSidebarItems({"struct":[["MqttClient","Handles commands from Publisher and Subscriber. Saves MQTT state and takes care of retransmissions."]]});

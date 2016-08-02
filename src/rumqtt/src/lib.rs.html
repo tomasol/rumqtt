@@ -113,7 +113,13 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
 </pre><pre class='rust '>
+
 <span class='doccomment'>//! A fast, lock free Mqtt client implementation in Rust.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! **NOTE**: Though (almost) everything in the spec is working, this crate is</span>
@@ -129,15 +135,20 @@
 <span class='doccomment'>//! # Connecting to a broker</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```ignore</span>
-<span class='doccomment'>//! let mut client_options = MqttOptions::new();</span>
+<span class='doccomment'>//! // Specify client connection opthons and which broker to connect to</span>
+<span class='doccomment'>//! let client_options = MqttOptions::new()</span>
+<span class='doccomment'>//!                                   .set_keep_alive(5)</span>
+<span class='doccomment'>//!                                   .set_reconnect(3)</span>
+<span class='doccomment'>//!                                   .set_client_id(&quot;qos0-stress-publish&quot;)</span>
+<span class='doccomment'>//!                                   .broker(&quot;broker.hivemq.com:1883&quot;);</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! //Specify client connection opthons and which broker to connect to</span>
-<span class='doccomment'>//! let proxy_client = client_options.set_keep_alive(5)</span>
-<span class='doccomment'>//!                                  .set_reconnect(5)</span>
-<span class='doccomment'>//!                                  .connect(&quot;localhost:1883&quot;);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! //Connects to a broker and returns a `Publisher` and `Subscriber`</span>
-<span class='doccomment'>//! let (publisher, subscriber) = proxy_client.start().expect(&quot;Coudn&#39;t start&quot;);</span>
+<span class='doccomment'>//! // Connects to a broker and returns a `Publisher` and `Subscriber`</span>
+<span class='doccomment'>//! // `.message_callback` is optional if you don&#39;t want to subscribe to any</span>
+<span class='doccomment'>//! topic.</span>
+<span class='doccomment'>//! let (publisher, subscriber) =</span>
+<span class='doccomment'>//! MqttClient::new(client_options).message_callback(move |message| {</span>
+<span class='doccomment'>//!        println!(&quot;message --&gt; {:?}&quot;, message);</span>
+<span class='doccomment'>//!     }).start().expect(&quot;Coudn&#39;t start&quot;);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!</span>
@@ -146,7 +157,8 @@
 <span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! for i in 0..100 {</span>
 <span class='doccomment'>//!     let payload = format!(&quot;{}. hello rust&quot;, i);</span>
-<span class='doccomment'>//!     publisher.publish(&quot;hello/rust&quot;, QoS::Level1, payload.into_bytes());</span>
+<span class='doccomment'>//! publisher.publish(&quot;hello/rust&quot;, QoS::Level1,</span>
+<span class='doccomment'>//! payload.into_bytes()).expect(&quot;Publish failure&quot;);</span>
 <span class='doccomment'>//!     thread::sleep(Duration::new(1, 0));</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//! ```</span>
@@ -157,10 +169,7 @@
 <span class='doccomment'>//! let topics = vec![(&quot;hello/+/world&quot;, QoS::Level0),</span>
 <span class='doccomment'>//!                   (&quot;hello/rust&quot;, QoS::Level1)];</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! subscriber.message_callback(|message| {</span>
-<span class='doccomment'>//!        println!(&quot;@@@ {:?}&quot;, message);</span>
-<span class='doccomment'>//! });</span>
-<span class='doccomment'>//! subscriber.subscribe(topics).expect(&quot;Subscribe error&quot;);</span>
+<span class='doccomment'>//! subscriber.subscribe(topics).expect(&quot;Subcription failure&quot;);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 
@@ -168,23 +177,24 @@
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mioco</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mio</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mqtt</span>;
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>chan</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ssl&quot;</span>)]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>openssl</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustls</span>;
 
 <span class='kw'>mod</span> <span class='ident'>error</span>;
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ssl&quot;</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tls</span>;
 <span class='kw'>mod</span> <span class='ident'>message</span>;
+<span class='kw'>mod</span> <span class='ident'>clientoptions</span>;
+<span class='kw'>mod</span> <span class='ident'>publisher</span>;
+<span class='kw'>mod</span> <span class='ident'>subscriber</span>;
 <span class='kw'>mod</span> <span class='ident'>client</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>MqttOptions</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>tls</span>::<span class='ident'>SslContext</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>QualityOfService</span> <span class='kw'>as</span> <span class='ident'>QoS</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>MqttClient</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>subscriber</span>::<span class='ident'>Subscriber</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>publisher</span>::<span class='ident'>Publisher</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

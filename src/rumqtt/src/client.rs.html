@@ -1088,43 +1088,6 @@
 <span id="1044">1044</span>
 <span id="1045">1045</span>
 <span id="1046">1046</span>
-<span id="1047">1047</span>
-<span id="1048">1048</span>
-<span id="1049">1049</span>
-<span id="1050">1050</span>
-<span id="1051">1051</span>
-<span id="1052">1052</span>
-<span id="1053">1053</span>
-<span id="1054">1054</span>
-<span id="1055">1055</span>
-<span id="1056">1056</span>
-<span id="1057">1057</span>
-<span id="1058">1058</span>
-<span id="1059">1059</span>
-<span id="1060">1060</span>
-<span id="1061">1061</span>
-<span id="1062">1062</span>
-<span id="1063">1063</span>
-<span id="1064">1064</span>
-<span id="1065">1065</span>
-<span id="1066">1066</span>
-<span id="1067">1067</span>
-<span id="1068">1068</span>
-<span id="1069">1069</span>
-<span id="1070">1070</span>
-<span id="1071">1071</span>
-<span id="1072">1072</span>
-<span id="1073">1073</span>
-<span id="1074">1074</span>
-<span id="1075">1075</span>
-<span id="1076">1076</span>
-<span id="1077">1077</span>
-<span id="1078">1078</span>
-<span id="1079">1079</span>
-<span id="1080">1080</span>
-<span id="1081">1081</span>
-<span id="1082">1082</span>
-<span id="1083">1083</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1143,6 +1106,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>tls</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>TlsStream</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>;
+<span class='kw'>use</span> <span class='ident'>jobsteal</span>;
 
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
@@ -1315,10 +1279,8 @@
                 <span class='kw'>match</span> <span class='ident'>p</span> {
                     <span class='ident'>PubNotify</span>::<span class='ident'>QoS0</span> <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> {
-                            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>pub0_rx</span> {
-                                <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>pub0_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>pub0_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
-                                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No publish recv channel&quot;</span>),
-                            }
+                            <span class='kw'>let</span> <span class='ident'>pub0_rx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pub0_rx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                            <span class='ident'>pub0_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Pub0 Rx Recv Error&quot;</span>)
                         };
                         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='ident'>message</span>);
                     }
@@ -1341,13 +1303,8 @@
                                     <span class='kw'>break</span>;
                                 }
                                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>message</span> <span class='op'>=</span> {
-
-                                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>pub1_rx</span> {
-                                        <span class='comment'>// Careful, this is a blocking call. Might</span>
-                                        <span class='comment'>// be easier to find queue len bugs with this.</span>
-                                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>pub1_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>pub1_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
-                                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No publish recv channel&quot;</span>),
-                                    }
+                                    <span class='kw'>let</span> <span class='ident'>pub1_rx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pub1_rx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                                    <span class='ident'>pub1_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Pub1 Rx Recv Error&quot;</span>)
                                 };
                                 <span class='comment'>// Add next packet id to message and publish</span>
                                 <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_next_pkid</span>();
@@ -1377,13 +1334,10 @@
                                     <span class='kw'>break</span>;
                                 }
                                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>message</span> <span class='op'>=</span> {
-
-                                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>pub2_rx</span> {
-                                        <span class='comment'>// Careful, this is a blocking call. Might</span>
-                                        <span class='comment'>// be easier to find queue len bugs with this.</span>
-                                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>pub2_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>pub2_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
-                                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No publish recv channel&quot;</span>),
-                                    }
+                                    <span class='comment'>// Careful, this is a blocking call. Might</span>
+                                    <span class='comment'>// be easier to find queue len bugs with this.</span>
+                                    <span class='kw'>let</span> <span class='ident'>pub2_rx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pub2_rx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                                    <span class='ident'>pub2_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Pub2 Rx Recv Error&quot;</span>)
                                 };
                                 <span class='comment'>// Add next packet id to message and publish</span>
                                 <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_next_pkid</span>();
@@ -1396,9 +1350,9 @@
                 }
             }
             <span class='ident'>MioNotification</span>::<span class='ident'>Sub</span> <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>topics</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>sub_rx</span> {
-                    <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>sub_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>sub_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Expected a subscribe recieve channel&quot;</span>),
+                <span class='kw'>let</span> <span class='ident'>topics</span> <span class='op'>=</span> {
+                    <span class='kw'>let</span> <span class='ident'>sub_rx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>sub_rx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                    <span class='ident'>sub_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Sub Rx Recv Error&quot;</span>)
                 };
                 <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>push_back</span>(<span class='ident'>topics</span>.<span class='ident'>clone</span>());
                 <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_subscribe</span>(<span class='ident'>topics</span>);
@@ -1414,10 +1368,8 @@
             }
             <span class='ident'>MioNotification</span>::<span class='ident'>Incoming</span> <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>packet</span> <span class='op'>=</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>incoming_rx</span> {
-                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>incoming_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>incoming_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No incoming recv channel&quot;</span>),
-                    }
+                    <span class='kw'>let</span> <span class='ident'>incoming_rx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>incoming_rx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                    <span class='ident'>incoming_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Incoming Rx Recv Error&quot;</span>)
                 };
                 <span class='self'>self</span>.<span class='ident'>STATE_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>, <span class='ident'>event_loop</span>);
             }
@@ -1436,21 +1388,13 @@
                 <span class='comment'>// packets are sent (_try_reconnect) but broker closed the connection without</span>
                 <span class='comment'>// sending CONNACK. Broker might be expecting TLS or username &amp; password</span>
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
-                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
-                            <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Failed</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            <span class='ident'>event_loop</span>.<span class='ident'>shutdown</span>();
-                        }
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
-                    }
+                    <span class='kw'>let</span> <span class='ident'>connsync_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                    <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Failed</span>).<span class='ident'>expect</span>(<span class='string'>&quot;ConnSync Tx Send Error&quot;</span>);
+                    <span class='ident'>event_loop</span>.<span class='ident'>shutdown</span>();
                 } <span class='kw'>else</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>streamupdate_tx</span> {
-                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>streamupdate_tx</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>try_clone</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t clone network stream&quot;</span>);
-                            <span class='ident'>streamupdate_tx</span>.<span class='ident'>send</span>(<span class='ident'>stream</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t send updated stream&quot;</span>);
-                        }
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No stream update channel&quot;</span>),
-                    }
+                    <span class='kw'>let</span> <span class='ident'>streamupdate_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>streamupdate_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                    <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>try_clone</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Stream Clone Error&quot;</span>);
+                    <span class='ident'>streamupdate_tx</span>.<span class='ident'>send</span>(<span class='ident'>stream</span>).<span class='ident'>expect</span>(<span class='string'>&quot;StreamUpdate Tx Send Error&quot;</span>);
                 }
             }
             <span class='ident'>MioNotification</span>::<span class='ident'>Shutdown</span> <span class='op'>=&gt;</span> {
@@ -1522,6 +1466,8 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>message_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
     {
+        <span class='comment'>// Build a pool with 4 threads, including this one.</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>jobsteal</span>::<span class='ident'>make_pool</span>(<span class='number'>4</span>).<span class='ident'>expect</span>(<span class='string'>&quot;couldn&#39;t create thread pool&quot;</span>);
         <span class='self'>self</span>.<span class='ident'>callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
         <span class='self'>self</span>
     }
@@ -1646,13 +1592,9 @@
                     <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span>;
                     <span class='self'>self</span>.<span class='ident'>no_of_reconnections</span> <span class='op'>+=</span> <span class='number'>1</span>;
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Success</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                                <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
-                        }
+                        <span class='kw'>let</span> <span class='ident'>connsync_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                        <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Success</span>).<span class='ident'>expect</span>(<span class='string'>&quot;ConnSync Tx Send Error&quot;</span>);
+                        <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
                     } <span class='kw'>else</span> {
                         <span class='comment'>// Resubscribe after a reconnection.</span>
                         <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
@@ -1661,18 +1603,12 @@
                         <span class='comment'>// Publisher won&#39;t stop even when disconnected until channel is full.</span>
                         <span class='comment'>// This notifies notify() to publish channel pending messages after</span>
                         <span class='comment'>// reconnect.</span>
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1Reconnect</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2Reconnect</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
+                        <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                        <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1Reconnect</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
+                        <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2Reconnect</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
 
-                    <span class='comment'>// TODO: Bug?? Multiple timers after restart?</span>
+                    <span class='comment'>// TODO: Bug?? Multiple timers after restart? Doesn&#39;t seem so based on pings</span>
                     <span class='ident'>event_loop</span>.<span class='ident'>timeout_ms</span>(<span class='ident'>MIO_QUEUE_TIMER</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>queue_timeout</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='number'>1000</span>)
                         .<span class='ident'>unwrap</span>();
                     <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
@@ -1696,27 +1632,17 @@
                     <span class='comment'>// Send only for notify() to recover if channel is blocked.</span>
                     <span class='comment'>// Blocking = true is set during publish if pub q len is more than desired.</span>
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
+                        <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                        <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
                 }
                 <span class='comment'>// TODO: Better read from channel again after PubComp instead of PubRec</span>
                 <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span> <span class='op'>=&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
+                        <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
+                        <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
                 }
                 _ <span class='op'>=&gt;</span> <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;packet handler says that he doesn&#39;t care&quot;</span>),

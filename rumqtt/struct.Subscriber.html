@@ -47,14 +47,14 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-355' class='srclink' href='../src/rumqtt/src/subscriber.rs.html#11-14' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-361' class='srclink' href='../src/rumqtt/src/subscriber.rs.html#11-14' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Subscriber {
     pub subscribe_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>TopicFilter, <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;&gt;,
     pub mionotify_tx: Sender&lt;MioNotification&gt;,
 }</pre><h2 class='fields'>Fields</h2>
 <table><tr class='stab '>
                              <td id='structfield.subscribe_tx'><code>subscribe_tx</code></td><td></td></tr><tr class='stab '>
-                             <td id='structfield.mionotify_tx'><code>mionotify_tx</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.Subscriber.html' title='rumqtt::Subscriber'>Subscriber</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-358' class='srclink' href='../src/rumqtt/src/subscriber.rs.html#16-30' title='goto source code'>[src]</a></span></h3>
+                             <td id='structfield.mionotify_tx'><code>mionotify_tx</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.Subscriber.html' title='rumqtt::Subscriber'>Subscriber</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-364' class='srclink' href='../src/rumqtt/src/subscriber.rs.html#16-30' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.subscribe' class='method'><code>fn <a href='#method.subscribe' class='fnname'>subscribe</a>(&amp;self, topics: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;) -&gt; Result&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>

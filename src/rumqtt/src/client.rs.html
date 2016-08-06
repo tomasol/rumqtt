@@ -1125,85 +1125,6 @@
 <span id="1081">1081</span>
 <span id="1082">1082</span>
 <span id="1083">1083</span>
-<span id="1084">1084</span>
-<span id="1085">1085</span>
-<span id="1086">1086</span>
-<span id="1087">1087</span>
-<span id="1088">1088</span>
-<span id="1089">1089</span>
-<span id="1090">1090</span>
-<span id="1091">1091</span>
-<span id="1092">1092</span>
-<span id="1093">1093</span>
-<span id="1094">1094</span>
-<span id="1095">1095</span>
-<span id="1096">1096</span>
-<span id="1097">1097</span>
-<span id="1098">1098</span>
-<span id="1099">1099</span>
-<span id="1100">1100</span>
-<span id="1101">1101</span>
-<span id="1102">1102</span>
-<span id="1103">1103</span>
-<span id="1104">1104</span>
-<span id="1105">1105</span>
-<span id="1106">1106</span>
-<span id="1107">1107</span>
-<span id="1108">1108</span>
-<span id="1109">1109</span>
-<span id="1110">1110</span>
-<span id="1111">1111</span>
-<span id="1112">1112</span>
-<span id="1113">1113</span>
-<span id="1114">1114</span>
-<span id="1115">1115</span>
-<span id="1116">1116</span>
-<span id="1117">1117</span>
-<span id="1118">1118</span>
-<span id="1119">1119</span>
-<span id="1120">1120</span>
-<span id="1121">1121</span>
-<span id="1122">1122</span>
-<span id="1123">1123</span>
-<span id="1124">1124</span>
-<span id="1125">1125</span>
-<span id="1126">1126</span>
-<span id="1127">1127</span>
-<span id="1128">1128</span>
-<span id="1129">1129</span>
-<span id="1130">1130</span>
-<span id="1131">1131</span>
-<span id="1132">1132</span>
-<span id="1133">1133</span>
-<span id="1134">1134</span>
-<span id="1135">1135</span>
-<span id="1136">1136</span>
-<span id="1137">1137</span>
-<span id="1138">1138</span>
-<span id="1139">1139</span>
-<span id="1140">1140</span>
-<span id="1141">1141</span>
-<span id="1142">1142</span>
-<span id="1143">1143</span>
-<span id="1144">1144</span>
-<span id="1145">1145</span>
-<span id="1146">1146</span>
-<span id="1147">1147</span>
-<span id="1148">1148</span>
-<span id="1149">1149</span>
-<span id="1150">1150</span>
-<span id="1151">1151</span>
-<span id="1152">1152</span>
-<span id="1153">1153</span>
-<span id="1154">1154</span>
-<span id="1155">1155</span>
-<span id="1156">1156</span>
-<span id="1157">1157</span>
-<span id="1158">1158</span>
-<span id="1159">1159</span>
-<span id="1160">1160</span>
-<span id="1161">1161</span>
-<span id="1162">1162</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1212,7 +1133,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>VecDeque</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Write</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>;
-<span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>tcp</span>::<span class='ident'>TcpStream</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::<span class='ident'>TcpStream</span>;
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::{<span class='ident'>Encodable</span>, <span class='ident'>Decodable</span>, <span class='ident'>QualityOfService</span>, <span class='ident'>TopicFilter</span>};
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
@@ -1231,7 +1152,6 @@
 
 <span class='kw'>const</span> <span class='ident'>MIO_PING_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>123</span>;
 <span class='kw'>const</span> <span class='ident'>MIO_QUEUE_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>321</span>;
-<span class='kw'>const</span> <span class='ident'>MIO_CLIENT_STREAM</span>: <span class='ident'>Token</span> <span class='op'>=</span> <span class='ident'>Token</span>(<span class='number'>1</span>);
 
 <span class='comment'>// static mut N: i32 = 0;</span>
 <span class='comment'>// unsafe {</span>
@@ -1269,6 +1189,8 @@
     <span class='ident'>Sub</span>,
     <span class='ident'>Disconnect</span>,
     <span class='ident'>Shutdown</span>,
+    <span class='ident'>Incoming</span>,
+    <span class='ident'>Reconnect</span>,
 }
 
 <span class='kw'>enum</span> <span class='ident'>HandlePacket</span> {
@@ -1310,8 +1232,10 @@
     <span class='kw'>pub</span> <span class='ident'>pub1_rx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>pub2_rx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>sub_rx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>,
-    <span class='kw'>pub</span> <span class='ident'>connsync_tx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>MqttStatus</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>incoming_rx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>VariablePacket</span><span class='op'>&gt;&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>mionotify_tx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Sender</span><span class='op'>&lt;</span><span class='ident'>MioNotification</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>connsync_tx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>MqttStatus</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>streamupdate_tx</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>NetworkStream</span><span class='op'>&gt;&gt;</span>,
 
     <span class='doccomment'>/// Queues. Note: &#39;record&#39; is qos2 term for &#39;publish&#39;</span>
     <span class='doccomment'>/// For QoS 1. Stores outgoing publishes</span>
@@ -1336,140 +1260,6 @@
 <span class='kw'>impl</span> <span class='ident'>Handler</span> <span class='kw'>for</span> <span class='ident'>MqttClient</span> {
     <span class='kw'>type</span> <span class='ident'>Timeout</span> <span class='op'>=</span> <span class='ident'>u64</span>;
     <span class='kw'>type</span> <span class='ident'>Message</span> <span class='op'>=</span> <span class='ident'>MioNotification</span>;
-
-    <span class='comment'>// TODO: Understand --&gt; when connecting to localbroker, For Incoming publishes,</span>
-    <span class='comment'>// state is at Readable@Connected state but while connecting to remote broker,</span>
-    <span class='comment'>// state is at Writable@Connected. Hence ended up add STATE_reate,</span>
-    <span class='comment'>// STATE_handle_packet</span>
-    <span class='comment'>// to both readable and writable</span>
-    <span class='kw'>fn</span> <span class='ident'>ready</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='ident'>MqttClient</span><span class='op'>&gt;</span>, <span class='ident'>token</span>: <span class='ident'>Token</span>, <span class='ident'>events</span>: <span class='ident'>EventSet</span>) {
-        <span class='kw'>if</span> <span class='ident'>events</span>.<span class='ident'>is_readable</span>() {
-            <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;@@@ Readable ... {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
-            <span class='kw'>match</span> <span class='ident'>token</span> {
-                <span class='ident'>MIO_CLIENT_STREAM</span> <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>state</span> {
-                        <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> <span class='op'>|</span> <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span> <span class='op'>=&gt;</span> {
-                            <span class='comment'>// @ Get incoming packets from the broker.</span>
-                            <span class='kw'>let</span> <span class='ident'>packet</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>STATE_read_incoming</span>(<span class='ident'>event_loop</span>) {
-                                <span class='prelude-val'>Ok</span>(<span class='ident'>pk</span>) <span class='op'>=&gt;</span> {
-                                    <span class='ident'>event_loop</span>.<span class='ident'>reregister</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>unwrap</span>(),
-                                                    <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                                    <span class='ident'>EventSet</span>::<span class='ident'>readable</span>(),
-                                                    <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                        .<span class='ident'>unwrap</span>();
-                                    <span class='ident'>pk</span>
-                                }
-                                <span class='comment'>// @ If failed with EOF error, server has closed the socket.</span>
-                                <span class='comment'>// @ Set state to disconnected, make a new TCP connection</span>
-                                <span class='comment'>// @ (we need to register here)</span>
-                                <span class='comment'>// @ and event loop to writable. Now writable state machine</span>
-                                <span class='comment'>// @ will takeover restarting the mqtt connection procedure</span>
-                                <span class='comment'>// TODO: Get proper error instead of Error::Read</span>
-                                <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error reading incoming packets : {:?}&quot;</span>, <span class='ident'>e</span>);
-                                    <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
-                                    <span class='self'>self</span>.<span class='ident'>STATE_try_reconnect</span>(<span class='ident'>event_loop</span>);
-                                    <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>expect</span>(<span class='string'>&quot;No Stream 22&quot;</span>);
-                                    <span class='comment'>// NOTE: reregister isn&#39;t working for new streams in linux while</span>
-                                    <span class='comment'>// it&#39;s working in mac osx</span>
-                                    <span class='ident'>event_loop</span>.<span class='ident'>register</span>(<span class='ident'>stream</span>,
-                                                  <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                                  <span class='ident'>EventSet</span>::<span class='ident'>writable</span>(),
-                                                  <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                        .<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t reregister&quot;</span>);
-                                    <span class='kw'>return</span>;
-                                }
-                            };
-
-                            <span class='macro'>trace</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>packet</span>);
-                            <span class='self'>self</span>.<span class='ident'>STATE_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>, <span class='ident'>event_loop</span>);
-
-                        }
-                        <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span> <span class='op'>=&gt;</span> {
-                            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Disconnected state invalid in readable&quot;</span>);
-                            <span class='ident'>event_loop</span>.<span class='ident'>reregister</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>unwrap</span>(),
-                                            <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                            <span class='ident'>EventSet</span>::<span class='ident'>writable</span>(),
-                                            <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                .<span class='ident'>unwrap</span>();
-                        }
-                    }
-                }
-
-                _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid token ..&quot;</span>),
-            }
-        }
-
-        <span class='comment'>// You do not need to register EventSet::writable() if you want to immediately</span>
-        <span class='comment'>// write back</span>
-        <span class='comment'>// to the socket you just read from. You can just perform the write as part of</span>
-        <span class='comment'>// the current</span>
-        <span class='comment'>// readable event. If you are performing an expensive task between the read and</span>
-        <span class='comment'>// write, you may want to handle this differently. Whether you are reading or</span>
-        <span class='comment'>// writing from</span>
-        <span class='comment'>// the socket, you also need to be aware that the kernel might not be ready for</span>
-        <span class='comment'>// your read</span>
-        <span class='comment'>// r write.</span>
-        <span class='comment'>//</span>
-        <span class='comment'>// NOTE: THIS IS BEING INVOKED AFTER TCPSTREAM::CONNECT (server up or not)</span>
-        <span class='comment'>// It might be READABLE for new incoming connections (for server) or data</span>
-        <span class='kw'>if</span> <span class='ident'>events</span>.<span class='ident'>is_writable</span>() {
-            <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;%%% Writable ... {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
-            <span class='kw'>match</span> <span class='ident'>token</span> {
-                <span class='ident'>MIO_CLIENT_STREAM</span> <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>state</span> {
-                        <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span> <span class='op'>=&gt;</span> {
-                            <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;sending mqtt connect packet ..&quot;</span>);
-                            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>_connect</span>() {
-                                <span class='comment'>// @ If writing connect packet is successful means TCP</span>
-                                <span class='comment'>// @ connection is successful. Change the state machine</span>
-                                <span class='comment'>// @ to handshake and event loop to readable to read</span>
-                                <span class='comment'>// @ CONACK packet</span>
-                                <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> {
-                                    <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span>;
-                                    <span class='ident'>event_loop</span>.<span class='ident'>reregister</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>unwrap</span>(),
-                                                    <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                                    <span class='ident'>EventSet</span>::<span class='ident'>readable</span>(),
-                                                    <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                        .<span class='ident'>unwrap</span>();
-                                }
-                                <span class='comment'>// @ Writing connect packet failed. Tcp connection might</span>
-                                <span class='comment'>// @ have failed. Try to establish a new Tcp connection</span>
-                                <span class='comment'>// @ and set eventloop to writable to write connect packets</span>
-                                <span class='comment'>// @ again</span>
-                                <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error establishing tcp connection --&gt; {:?}&quot;</span>, <span class='ident'>e</span>);
-                                    <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
-                                    <span class='self'>self</span>.<span class='ident'>STATE_try_reconnect</span>(<span class='ident'>event_loop</span>);
-                                    <span class='comment'>// Should be done after reconnect coz stream is updated</span>
-                                    <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>expect</span>(<span class='string'>&quot;No stream 1&quot;</span>);
-                                    <span class='ident'>event_loop</span>.<span class='ident'>register</span>(<span class='ident'>stream</span>,
-                                                  <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                                  <span class='ident'>EventSet</span>::<span class='ident'>writable</span>(),
-                                                  <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                        .<span class='ident'>unwrap</span>();
-                                }
-
-                            }
-                        }
-                        <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span> <span class='op'>|</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> <span class='op'>=&gt;</span> {
-                            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Incoming data in writable state ..&quot;</span>);
-                            <span class='comment'>// TODO: Check if this is an error and we can do reads here</span>
-                            <span class='comment'>// directly</span>
-                            <span class='ident'>event_loop</span>.<span class='ident'>reregister</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>unwrap</span>(),
-                                            <span class='ident'>MIO_CLIENT_STREAM</span>,
-                                            <span class='ident'>EventSet</span>::<span class='ident'>readable</span>(),
-                                            <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                                .<span class='ident'>unwrap</span>();
-
-                        }
-                    }
-                }
-
-                _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid token ..&quot;</span>),
-            }
-        }
-    }
 
     <span class='kw'>fn</span> <span class='ident'>timeout</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>, <span class='ident'>timer</span>: <span class='self'>Self</span>::<span class='ident'>Timeout</span>) {
         <span class='comment'>// TODO: Move timer handling logic to seperate methods</span>
@@ -1517,7 +1307,7 @@
     }
 
     <span class='comment'>// TODO: Make smaller methods</span>
-    <span class='kw'>fn</span> <span class='ident'>notify</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, _: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>, <span class='ident'>notification_type</span>: <span class='ident'>MioNotification</span>) {
+    <span class='kw'>fn</span> <span class='ident'>notify</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>, <span class='ident'>notification_type</span>: <span class='ident'>MioNotification</span>) {
         <span class='comment'>// No Mqtt state distiction here. Should receive messages from channel in all</span>
         <span class='comment'>// the states</span>
         <span class='kw'>match</span> <span class='ident'>notification_type</span> {
@@ -1618,9 +1408,49 @@
                 <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>state</span> {
                     <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_disconnect</span>();
-                        <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
                     }
                     _ <span class='op'>=&gt;</span> <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Mqtt connection not established&quot;</span>),
+                }
+            }
+            <span class='ident'>MioNotification</span>::<span class='ident'>Incoming</span> <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> <span class='ident'>packet</span> <span class='op'>=</span> {
+                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>incoming_rx</span> {
+                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>incoming_rx</span>) <span class='op'>=&gt;</span> <span class='ident'>incoming_rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>(),
+                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No incoming recv channel&quot;</span>),
+                    }
+                };
+                <span class='self'>self</span>.<span class='ident'>STATE_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>, <span class='ident'>event_loop</span>);
+            }
+            <span class='ident'>MioNotification</span>::<span class='ident'>Reconnect</span> <span class='op'>=&gt;</span> {
+                <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
+
+                <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
+                <span class='kw'>loop</span> {
+                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>_try_reconnect</span>() {
+                        <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> <span class='kw'>break</span>,
+                        <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>continue</span>,
+                    }
+                }
+
+                <span class='comment'>// Handles the case where initial tcp connect is successful and mqtt connect</span>
+                <span class='comment'>// packets are sent (_try_reconnect) but broker closed the connection without</span>
+                <span class='comment'>// sending CONNACK. Broker might be expecting TLS or username &amp; password</span>
+                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
+                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
+                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
+                            <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Failed</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                            <span class='ident'>event_loop</span>.<span class='ident'>shutdown</span>();
+                        }
+                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
+                    }
+                } <span class='kw'>else</span> {
+                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>streamupdate_tx</span> {
+                        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>streamupdate_tx</span>) <span class='op'>=&gt;</span> {
+                            <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>try_clone</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t clone network stream&quot;</span>);
+                            <span class='ident'>streamupdate_tx</span>.<span class='ident'>send</span>(<span class='ident'>stream</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t send updated stream&quot;</span>);
+                        }
+                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No stream update channel&quot;</span>),
+                    }
                 }
             }
             <span class='ident'>MioNotification</span>::<span class='ident'>Shutdown</span> <span class='op'>=&gt;</span> {
@@ -1667,8 +1497,10 @@
             <span class='ident'>pub1_rx</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>pub2_rx</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>sub_rx</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>connsync_tx</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>incoming_rx</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>mionotify_tx</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>connsync_tx</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>streamupdate_tx</span>: <span class='prelude-val'>None</span>,
 
             <span class='comment'>// Queues</span>
             <span class='ident'>incoming_rec</span>: <span class='ident'>VecDeque</span>::<span class='ident'>new</span>(),
@@ -1712,6 +1544,9 @@
         <span class='kw'>let</span> (<span class='ident'>sub_tx</span>, <span class='ident'>sub_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;&gt;</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>sub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span>);
         <span class='self'>self</span>.<span class='ident'>sub_rx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>sub_rx</span>);
 
+        <span class='kw'>let</span> (<span class='ident'>incoming_tx</span>, <span class='ident'>incoming_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>VariablePacket</span><span class='op'>&gt;</span>(<span class='number'>1</span>);
+        <span class='self'>self</span>.<span class='ident'>incoming_rx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>incoming_rx</span>);
+
         <span class='comment'>// synchronizes tcp connection. why ?</span>
         <span class='comment'>// start() call should fail if there a problem creating initial tcp</span>
         <span class='comment'>// connection &amp; mqtt connection. Since connections are happening inside thread,</span>
@@ -1719,6 +1554,10 @@
         <span class='comment'>// (publisher, subscriber) in case connection fails.</span>
         <span class='kw'>let</span> (<span class='ident'>connsync_tx</span>, <span class='ident'>connsync_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>MqttStatus</span><span class='op'>&gt;</span>(<span class='number'>1</span>);
         <span class='self'>self</span>.<span class='ident'>connsync_tx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>connsync_tx</span>);
+
+        <span class='kw'>let</span> (<span class='ident'>streamupdate_tx</span>, <span class='ident'>streamupdate_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>NetworkStream</span><span class='op'>&gt;</span>(<span class='number'>1</span>);
+        <span class='self'>self</span>.<span class='ident'>streamupdate_tx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>streamupdate_tx</span>.<span class='ident'>clone</span>());
+
         <span class='comment'>// @ Create &#39;publisher&#39; and &#39;subscriber&#39;</span>
         <span class='comment'>// @ These are the handles using which user interacts with rumqtt.</span>
         <span class='kw'>let</span> <span class='ident'>publisher</span> <span class='op'>=</span> <span class='ident'>Publisher</span> {
@@ -1731,38 +1570,59 @@
 
         <span class='kw'>let</span> <span class='ident'>subscriber</span> <span class='op'>=</span> <span class='ident'>Subscriber</span> {
             <span class='ident'>subscribe_tx</span>: <span class='ident'>sub_tx</span>,
-            <span class='ident'>mionotify_tx</span>: <span class='ident'>mionotify_tx</span>,
+            <span class='ident'>mionotify_tx</span>: <span class='ident'>mionotify_tx</span>.<span class='ident'>clone</span>(),
         };
 
-        <span class='comment'>// This is a non blocking call and almost never fails</span>
-        <span class='comment'>// Whether connection is successfu or not is to found</span>
-        <span class='comment'>// out in eventloop</span>
-        <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TcpStream</span>::<span class='ident'>connect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>addr</span>));
-        <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>tls</span> {
-            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>tls</span>) <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>config</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TlsStream</span>::<span class='ident'>make_config</span>(<span class='ident'>tls</span>));
-                <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>addr</span>.<span class='ident'>split</span>(<span class='string'>&quot;:&quot;</span>);
-                <span class='kw'>let</span> <span class='ident'>host</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>host</span>.<span class='ident'>collect</span>();
-                <span class='comment'>// println!(&quot;@@@@ {:?}&quot;, host);</span>
-                <span class='ident'>NetworkStream</span>::<span class='ident'>Tls</span>(<span class='ident'>TlsStream</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>, <span class='ident'>host</span>[<span class='number'>0</span>], <span class='ident'>config</span>))
-            }
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>NetworkStream</span>::<span class='ident'>Tcp</span>(<span class='ident'>stream</span>),
-        };
-        <span class='self'>self</span>.<span class='ident'>stream</span> <span class='op'>=</span> <span class='ident'>stream</span>;
+        <span class='comment'>// Initial Mqtt connection</span>
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_try_reconnect</span>());
 
+        <span class='kw'>let</span> <span class='ident'>reader_stream</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>try_clone</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t clone the stream&quot;</span>);
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>streamupdate_tx</span>.<span class='ident'>send</span>(<span class='ident'>reader_stream</span>));
+
+        <span class='comment'>// This is the thread that handles mio event loop.</span>
+        <span class='comment'>// Mio event loop is intentionally made to use just notify and timers.</span>
+        <span class='comment'>// Tcp Streams are std blocking streams.This helps avoiding the state</span>
+        <span class='comment'>// machine hell.</span>
+        <span class='comment'>// All the network writes also happen in this thread</span>
         <span class='comment'>// TODO: Handle thread death</span>
         <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='comment'>// State machine: Disconnected. Check if &#39;writable&#39; success</span>
-            <span class='comment'>// to know connection success</span>
-            <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
-            <span class='ident'>event_loop</span>.<span class='ident'>register</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>get_ref</span>().<span class='ident'>unwrap</span>(),
-                          <span class='ident'>MIO_CLIENT_STREAM</span>,
-                          <span class='ident'>EventSet</span>::<span class='ident'>writable</span>(),
-                          <span class='ident'>PollOpt</span>::<span class='ident'>edge</span>() <span class='op'>|</span> <span class='ident'>PollOpt</span>::<span class='ident'>oneshot</span>())
-                .<span class='ident'>unwrap</span>();
-
             <span class='ident'>event_loop</span>.<span class='ident'>run</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Couldn&#39;t Run EventLoop&quot;</span>);
         });
+
+        <span class='comment'>// This thread handles network reads (coz they are blocking) and</span>
+        <span class='comment'>// and sends them to event loop thread to handle mqtt state.</span>
+        <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
+            <span class='lifetime'>&#39;update_stream</span>: <span class='kw'>loop</span> {
+                <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>2</span>, <span class='number'>0</span>));
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='ident'>streamupdate_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Stream update channel error&quot;</span>);
+                <span class='kw'>loop</span> {
+                    <span class='kw'>let</span> <span class='ident'>packet</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>VariablePacket</span>::<span class='ident'>decode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>stream</span>) {
+                        <span class='comment'>// @ Decoded packet successfully.</span>
+                        <span class='prelude-val'>Ok</span>(<span class='ident'>pk</span>) <span class='op'>=&gt;</span> <span class='ident'>pk</span>,
+                        <span class='prelude-val'>Err</span>(<span class='ident'>err</span>) <span class='op'>=&gt;</span> {
+                            <span class='comment'>// Socket error are readily available here as soon as</span>
+                            <span class='comment'>// disconnection happens. So it might be right for this</span>
+                            <span class='comment'>// thread to ask for reconnection rather than reconnecting</span>
+                            <span class='comment'>// during write failures</span>
+                            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error in receiving packet {:?}&quot;</span>, <span class='ident'>err</span>);
+                            <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Reconnect</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Unable to Notify&quot;</span>);
+                            <span class='kw'>break</span>;
+                        }
+                        <span class='comment'>// Err(err) =&gt; {</span>
+                        <span class='comment'>//     // maybe size=0 while reading indicating socket</span>
+                        <span class='comment'>//     // close at broker end</span>
+                        <span class='comment'>//     panic!(&quot;Error in receiving packet {:?}&quot;, err);</span>
+                        <span class='comment'>//     // self._unbind();</span>
+                        <span class='comment'>//     // TODO: Return actual error</span>
+                        <span class='comment'>//     //Err(Error::Read)</span>
+                        <span class='comment'>// }</span>
+                    };
+                    <span class='ident'>incoming_tx</span>.<span class='ident'>send</span>(<span class='ident'>packet</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Unable to send incoming message&quot;</span>);
+                    <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Incoming</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Unable to Notify&quot;</span>);
+                }
+            }
+        });
+
         <span class='kw'>let</span> <span class='ident'>conn</span> <span class='op'>=</span> <span class='ident'>connsync_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Connection sync recv error&quot;</span>);
         <span class='kw'>match</span> <span class='ident'>conn</span> {
             <span class='ident'>MqttStatus</span>::<span class='ident'>Success</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>((<span class='ident'>publisher</span>, <span class='ident'>subscriber</span>)),
@@ -1775,6 +1635,96 @@
     <span class='doccomment'>/// Just to know how many times the client reconnected (coz of bad</span>
     <span class='doccomment'>/// networks, broker crashes etc)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_reconnection_count</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>u32</span> { <span class='self'>self</span>.<span class='ident'>no_of_reconnections</span> }
+
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>STATE_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>packet</span>: <span class='kw-2'>&amp;</span><span class='ident'>VariablePacket</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) {
+        <span class='kw'>let</span> <span class='ident'>handle</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>handle_packet</span>(<span class='ident'>packet</span>);
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>p</span>) <span class='op'>=</span> <span class='ident'>handle</span> {
+            <span class='kw'>match</span> <span class='ident'>p</span> {
+                <span class='comment'>// Mqtt connection established, release (publisher, subscriber) &amp; start the timers</span>
+                <span class='ident'>HandlePacket</span>::<span class='ident'>ConnAck</span> <span class='op'>=&gt;</span> {
+                    <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span>;
+                    <span class='self'>self</span>.<span class='ident'>no_of_reconnections</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
+                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
+                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
+                                <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Success</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                                <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                            }
+                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
+                        }
+                    } <span class='kw'>else</span> {
+                        <span class='comment'>// Resubscribe after a reconnection.</span>
+                        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
+                            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_subscribe</span>(<span class='ident'>s</span>);
+                        }
+                        <span class='comment'>// Publisher won&#39;t stop even when disconnected until channel is full.</span>
+                        <span class='comment'>// This notifies notify() to publish channel pending messages after</span>
+                        <span class='comment'>// reconnect.</span>
+                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
+                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
+                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1Reconnect</span>))
+                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2Reconnect</span>))
+                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                            }
+                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
+                        }
+                    }
+
+                    <span class='comment'>// TODO: Bug?? Multiple timers after restart?</span>
+                    <span class='ident'>event_loop</span>.<span class='ident'>timeout_ms</span>(<span class='ident'>MIO_QUEUE_TIMER</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>queue_timeout</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='number'>1000</span>)
+                        .<span class='ident'>unwrap</span>();
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
+                        <span class='ident'>event_loop</span>.<span class='ident'>timeout_ms</span>(<span class='ident'>MIO_PING_TIMER</span>, <span class='ident'>keep_alive</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='number'>900</span>).<span class='ident'>unwrap</span>();
+                    }
+
+                }
+                <span class='ident'>HandlePacket</span>::<span class='ident'>Publish</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> {
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>message_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>callback</span> {
+                        <span class='kw'>let</span> <span class='ident'>message_callback</span> <span class='op'>=</span> <span class='ident'>message_callback</span>.<span class='ident'>clone</span>();
+
+                        <span class='comment'>// Have a thread pool to handle message callbacks. Take the threadpool as a</span>
+                        <span class='comment'>// parameter</span>
+                        <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
+                    }
+                }
+                <span class='comment'>// Sending a dummy notification saying tha queue size has reduced</span>
+                <span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span> <span class='op'>=&gt;</span> {
+                    <span class='comment'>// Don&#39;t notify everytime q len is &lt; max. This will always be true initially</span>
+                    <span class='comment'>// leading to dup notify.</span>
+                    <span class='comment'>// Send only for notify() to recover if channel is blocked.</span>
+                    <span class='comment'>// Blocking = true is set during publish if pub q len is more than desired.</span>
+                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
+                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
+                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
+                                <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>))
+                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                            }
+                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
+                        }
+                    }
+                }
+                <span class='comment'>// TODO: Better read from channel again after PubComp instead of PubRec</span>
+                <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span> <span class='op'>=&gt;</span> {
+                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
+                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
+                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
+                                <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>))
+                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
+                            }
+                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
+                        }
+                    }
+                }
+                _ <span class='op'>=&gt;</span> <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;packet handler says that he doesn&#39;t care&quot;</span>),
+            }
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>) <span class='op'>=</span> <span class='ident'>handle</span> {
+            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error handling the packet {:?}&quot;</span>, <span class='ident'>err</span>);
+        }
+    }
 
     <span class='kw'>fn</span> <span class='ident'>handle_packet</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>packet</span>: <span class='kw-2'>&amp;</span><span class='ident'>VariablePacket</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>HandlePacket</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>state</span> {
@@ -1921,7 +1871,10 @@
                 }
             }
 
-            <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid state while handling packets&quot;</span>),
+            <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span> <span class='op'>=&gt;</span> {
+                <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid (Disconnected) state while handling packets&quot;</span>);
+                <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>Invalid</span>)
+            }
         }
     }
 
@@ -1960,133 +1913,6 @@
         }
     }
 
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>STATE_read_incoming</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>VariablePacket</span><span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='ident'>VariablePacket</span>::<span class='ident'>decode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>stream</span>) {
-            <span class='comment'>// @ Decoded packet successfully.</span>
-            <span class='comment'>// @ Retrigger readable in evenloop</span>
-            <span class='prelude-val'>Ok</span>(<span class='ident'>pk</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>pk</span>),
-            <span class='comment'>// @ Try to make a new Tcp connection.</span>
-            <span class='comment'>// @ Set state machine to Disconnected.</span>
-            <span class='comment'>// @ Make eventloop writable to check connection status</span>
-            <span class='prelude-val'>Err</span>(<span class='ident'>err</span>) <span class='op'>=&gt;</span> {
-                <span class='comment'>// maybe size=0 while reading indicating socket</span>
-                <span class='comment'>// close at broker end</span>
-                <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error in receiving packet {:?}&quot;</span>, <span class='ident'>err</span>);
-                <span class='self'>self</span>.<span class='ident'>_unbind</span>();
-                <span class='comment'>// TODO: Return actual error</span>
-                <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Read</span>)
-            }
-        }
-    }
-
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>STATE_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>packet</span>: <span class='kw-2'>&amp;</span><span class='ident'>VariablePacket</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) {
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>p</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>handle_packet</span>(<span class='ident'>packet</span>) {
-            <span class='kw'>match</span> <span class='ident'>p</span> {
-                <span class='comment'>// Mqtt connection established, start the timers</span>
-                <span class='ident'>HandlePacket</span>::<span class='ident'>ConnAck</span> <span class='op'>=&gt;</span> {
-                    <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span>;
-                    <span class='self'>self</span>.<span class='ident'>no_of_reconnections</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Success</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                                <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
-                        }
-                    } <span class='kw'>else</span> {
-                        <span class='comment'>// Resubscribe after a reconnection.</span>
-                        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
-                            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_subscribe</span>(<span class='ident'>s</span>);
-                        }
-                        <span class='comment'>// Publisher won&#39;t stop even when disconnected until channel is full.</span>
-                        <span class='comment'>// This notifies notify() to publish channel pending messages after</span>
-                        <span class='comment'>// reconnect.</span>
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1Reconnect</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2Reconnect</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
-                    }
-
-
-                    <span class='comment'>// TODO: Bug?? Multiple timers after restart?</span>
-                    <span class='ident'>event_loop</span>.<span class='ident'>timeout_ms</span>(<span class='ident'>MIO_QUEUE_TIMER</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>queue_timeout</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='number'>1000</span>)
-                        .<span class='ident'>unwrap</span>();
-                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
-                        <span class='ident'>event_loop</span>.<span class='ident'>timeout_ms</span>(<span class='ident'>MIO_PING_TIMER</span>, <span class='ident'>keep_alive</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='number'>900</span>).<span class='ident'>unwrap</span>();
-                    }
-
-                }
-                <span class='ident'>HandlePacket</span>::<span class='ident'>Publish</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> {
-                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>message_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>callback</span> {
-                        <span class='kw'>let</span> <span class='ident'>message_callback</span> <span class='op'>=</span> <span class='ident'>message_callback</span>.<span class='ident'>clone</span>();
-
-                        <span class='comment'>// Have a thread pool to handle message callbacks. Take the threadpool as a</span>
-                        <span class='comment'>// parameter</span>
-                        <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
-                    }
-                }
-                <span class='comment'>// Sending a dummy notification saying tha queue size has reduced</span>
-                <span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span> <span class='op'>=&gt;</span> {
-                    <span class='comment'>// Don&#39;t notify everytime q len is &lt; max. This will always be true initially</span>
-                    <span class='comment'>// leading to dup notify.</span>
-                    <span class='comment'>// Send only for notify() to recover if channel is blocked.</span>
-                    <span class='comment'>// Blocking = true is set during publish if pub q len is more than desired.</span>
-                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
-                    }
-                }
-                <span class='comment'>// TODO: Better read from channel again after PubComp instead of PubRec</span>
-                <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span> <span class='op'>=&gt;</span> {
-                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> {
-                            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>mionotify_tx</span>) <span class='op'>=&gt;</span> {
-                                <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-                                <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>))
-                                    .<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                            }
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No mionotify channel&quot;</span>),
-                        }
-                    }
-                }
-                _ <span class='op'>=&gt;</span> <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;packet handler says that he doesn&#39;t care&quot;</span>),
-            }
-        } <span class='kw'>else</span> {
-            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error handling the packet&quot;</span>);
-        }
-    }
-
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>STATE_try_reconnect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_loop</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>EventLoop</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) {
-        <span class='comment'>// Handles case where initial connection failures</span>
-        <span class='comment'>// E.g testsuite --&gt; inital_mqtt_connect_failure_test</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>==</span> <span class='boolvalue'>true</span> {
-            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span> {
-                <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>connsync_tx</span>) <span class='op'>=&gt;</span> {
-                    <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Failed</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Send failed&quot;</span>);
-                    <span class='ident'>event_loop</span>.<span class='ident'>shutdown</span>();
-                }
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;No connsync channel&quot;</span>),
-            }
-            <span class='kw'>return</span>;
-        }
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_try_reconnect</span>();
-    }
-
     <span class='kw'>fn</span> <span class='ident'>_connect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>connect</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_connect_packet</span>());
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>connect</span>));
@@ -2105,13 +1931,25 @@
             <span class='comment'>// TODO: Implement</span>
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;To be implemented&quot;</span>),
             <span class='prelude-val'>Some</span>(<span class='ident'>dur</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;  Will try Reconnect in {} seconds&quot;</span>, <span class='ident'>dur</span>);
-                <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='ident'>dur</span> <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>));
-                <span class='comment'>// Almost never fails</span>
-                <span class='kw'>match</span> <span class='ident'>TcpStream</span>::<span class='ident'>connect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>addr</span>) {
-                    <span class='prelude-val'>Ok</span>(<span class='ident'>stream</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>stream</span> <span class='op'>=</span> <span class='ident'>NetworkStream</span>::<span class='ident'>Tcp</span>(<span class='ident'>stream</span>),
-                    <span class='prelude-val'>Err</span>(<span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Error creating new stream {:?}&quot;</span>, <span class='ident'>err</span>),
+                <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>initial_connect</span> {
+                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;  Will try Reconnect in {} seconds&quot;</span>, <span class='ident'>dur</span>);
+                    <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='ident'>dur</span> <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>));
                 }
+                <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TcpStream</span>::<span class='ident'>connect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>addr</span>));
+                <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>tls</span> {
+                    <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>tls</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> <span class='ident'>config</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TlsStream</span>::<span class='ident'>make_config</span>(<span class='ident'>tls</span>));
+                        <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>addr</span>.<span class='ident'>split</span>(<span class='string'>&quot;:&quot;</span>);
+                        <span class='kw'>let</span> <span class='ident'>host</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>host</span>.<span class='ident'>collect</span>();
+                        <span class='comment'>// println!(&quot;@@@@ {:?}&quot;, host);</span>
+                        <span class='ident'>NetworkStream</span>::<span class='ident'>Tls</span>(<span class='ident'>TlsStream</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>, <span class='ident'>host</span>[<span class='number'>0</span>], <span class='ident'>config</span>))
+                    }
+                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>NetworkStream</span>::<span class='ident'>Tcp</span>(<span class='ident'>stream</span>),
+                };
+                <span class='self'>self</span>.<span class='ident'>stream</span> <span class='op'>=</span> <span class='ident'>stream</span>;
+                <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_connect</span>());
+                <span class='comment'>// TODO: Change states properly in one location</span>
+                <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span>;
                 <span class='prelude-val'>Ok</span>(())
             }
         }
@@ -2124,7 +1962,9 @@
 
                 <span class='comment'>// Republish QoS 1 outgoing publishes</span>
                 <span class='kw'>loop</span> {
-                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>index</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>iter</span>().<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span> <span class='op'>-</span> <span class='ident'>x</span>.<span class='number'>0</span> <span class='op'>&gt;</span> <span class='ident'>timeout</span>) {
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>index</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>
+                        .<span class='ident'>iter</span>()
+                        .<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span> <span class='op'>-</span> <span class='ident'>x</span>.<span class='number'>0</span> <span class='op'>&gt;</span> <span class='ident'>timeout</span>) {
                         <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>remove</span>(<span class='ident'>index</span>).<span class='ident'>expect</span>(<span class='string'>&quot;No such entry&quot;</span>);
                         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
                     } <span class='kw'>else</span> {
@@ -2134,7 +1974,9 @@
 
                 <span class='comment'>// Republish QoS 2 outgoing records</span>
                 <span class='kw'>loop</span> {
-                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>index</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>iter</span>().<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span> <span class='op'>-</span> <span class='ident'>x</span>.<span class='number'>0</span> <span class='op'>&gt;</span> <span class='ident'>timeout</span>) {
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>index</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>
+                        .<span class='ident'>iter</span>()
+                        .<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span> <span class='op'>-</span> <span class='ident'>x</span>.<span class='number'>0</span> <span class='op'>&gt;</span> <span class='ident'>timeout</span>) {
                         <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>remove</span>(<span class='ident'>index</span>).<span class='ident'>expect</span>(<span class='string'>&quot;No such entry&quot;</span>);
                         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
                     } <span class='kw'>else</span> {

@@ -1088,6 +1088,12 @@
 <span id="1044">1044</span>
 <span id="1045">1045</span>
 <span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1218,6 +1224,7 @@
 
     <span class='doccomment'>/// On message callback</span>
     <span class='kw'>pub</span> <span class='ident'>callback</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>SendableFn</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>pool</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>jobsteal</span>::<span class='ident'>Pool</span><span class='op'>&gt;</span>,
 }
 
 <span class='comment'>// TODO: Use Mio::Handler, Unit test for state machine</span>
@@ -1457,6 +1464,7 @@
 
             <span class='comment'>// callback</span>
             <span class='ident'>callback</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>pool</span>: <span class='prelude-val'>None</span>,
         }
     }
     <span class='comment'>// Note: Setting callback before subscriber &amp; publisher</span>
@@ -1467,7 +1475,8 @@
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
     {
         <span class='comment'>// Build a pool with 4 threads, including this one.</span>
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>jobsteal</span>::<span class='ident'>make_pool</span>(<span class='number'>4</span>).<span class='ident'>expect</span>(<span class='string'>&quot;couldn&#39;t create thread pool&quot;</span>);
+        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>jobsteal</span>::<span class='ident'>make_pool</span>(<span class='number'>4</span>).<span class='ident'>expect</span>(<span class='string'>&quot;couldn&#39;t create thread pool&quot;</span>);
+        <span class='self'>self</span>.<span class='ident'>pool</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>pool</span>);
         <span class='self'>self</span>.<span class='ident'>callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
         <span class='self'>self</span>
     }
@@ -1622,7 +1631,9 @@
 
                         <span class='comment'>// Have a thread pool to handle message callbacks. Take the threadpool as a</span>
                         <span class='comment'>// parameter</span>
-                        <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
+                        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>as_mut</span>().<span class='ident'>unwrap</span>();
+                        <span class='ident'>pool</span>.<span class='ident'>submit</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
+                        <span class='comment'>//thread::spawn(move || message_callback(*m));</span>
                     }
                 }
                 <span class='comment'>// Sending a dummy notification saying tha queue size has reduced</span>
@@ -2111,6 +2122,7 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
     }
 
+    <span class='comment'>//http://stackoverflow.com/questions/11115364/mqtt-messageid-practical-implementation</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>_next_pkid</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>PacketIdentifier</span> {
         <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_pkid</span>;

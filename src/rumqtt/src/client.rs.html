@@ -1094,6 +1094,8 @@
 <span id="1050">1050</span>
 <span id="1051">1051</span>
 <span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1954,29 +1956,31 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>_publish</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>message</span>: <span class='ident'>Message</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+
         <span class='kw'>let</span> <span class='ident'>qos</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>qos</span>;
-        <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>transform</span>(<span class='prelude-val'>Some</span>(<span class='ident'>qos</span>));
-        <span class='kw'>let</span> <span class='ident'>payload</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>message</span>.<span class='ident'>payload</span>;
+        <span class='kw'>let</span> <span class='ident'>message_box</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>transform</span>(<span class='prelude-val'>Some</span>(<span class='ident'>qos</span>.<span class='ident'>clone</span>()));
+        <span class='kw'>let</span> <span class='ident'>topic</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>topic</span>;
+        <span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='ident'>payload</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>message</span>.<span class='ident'>payload</span>;
         <span class='kw'>let</span> <span class='ident'>retain</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>retain</span>;
 
-        <span class='kw'>let</span> <span class='ident'>publish_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_publish_packet</span>(<span class='ident'>message</span>.<span class='ident'>topic</span>.<span class='ident'>clone</span>(), <span class='ident'>qos</span>.<span class='ident'>clone</span>(), <span class='ident'>retain</span>, <span class='ident'>payload</span>.<span class='ident'>clone</span>()));
+        <span class='kw'>let</span> <span class='ident'>publish_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_publish_packet</span>(<span class='ident'>topic</span>, <span class='ident'>qos</span>, <span class='ident'>retain</span>, <span class='ident'>payload</span>.<span class='ident'>clone</span>()));
 
         <span class='kw'>match</span> <span class='ident'>message</span>.<span class='ident'>qos</span> {
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level0</span> <span class='op'>=&gt;</span> (),
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level1</span>(_) <span class='op'>=&gt;</span> {
-                <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message</span>.<span class='ident'>clone</span>()));
+                <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> {
                     <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
                 }
             }
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level2</span>(_) <span class='op'>=&gt;</span> {
-                <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message</span>.<span class='ident'>clone</span>()));
+                <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> {
                     <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
                 }
             }
         }
-        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;       Publish {:?} {:?} &gt; {} bytes&quot;</span>, <span class='ident'>message</span>.<span class='ident'>qos</span>, <span class='ident'>message</span>.<span class='ident'>topic</span>.<span class='ident'>to_string</span>(), <span class='ident'>message</span>.<span class='ident'>payload</span>.<span class='ident'>len</span>());
+        <span class='comment'>//debug!(&quot;       Publish {:?} {:?} &gt; {} bytes&quot;, message.qos, topic.clone().to_string(), message.payload.len());</span>
 
         <span class='comment'>// TODO: print error for failure here</span>
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>publish_packet</span>));
@@ -2145,7 +2149,7 @@
 <span class='comment'>// becomes full, publishes are blocked</span>
 <span class='comment'>// 4. No locks. Fast and efficient because of Rust and Mio</span>
 <span class='comment'>// 5. Callback only for subscibed incoming message. Callbacks are executed</span>
-<span class='comment'>// using threadpool (mioco)</span>
+<span class='comment'>// using threadpool</span>
 <span class='comment'>//</span>
 </pre>
 </section>

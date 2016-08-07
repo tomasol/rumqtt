@@ -106,7 +106,6 @@
 <span id="62">62</span>
 <span id="63">63</span>
 <span id="64">64</span>
-<span id="65">65</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
@@ -139,10 +138,9 @@
     <span class='ident'>TopicFilter</span>,
     <span class='ident'>NoReconnectTry</span>,
     <span class='ident'>MqttPacket</span>,
-    <span class='ident'>MioNotify</span>,
     <span class='ident'>Ssl</span>,
     <span class='ident'>EventLoop</span>,
-    <span class='ident'>MioNotifyError</span>,
+    <span class='ident'>MioNotify</span>,
     <span class='ident'>Read</span>,
 }
 
@@ -171,7 +169,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>mio</span>::<span class='ident'>NotifyError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>mio</span>::<span class='ident'>NotifyError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MioNotifyError</span> }
+    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>mio</span>::<span class='ident'>NotifyError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MioNotify</span> }
 }
 </pre>
 </section>

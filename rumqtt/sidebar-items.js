@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["QoS",""]],"struct":[["MqttClient","Handles commands from Publisher and Subscriber. Saves MQTT state and takes care of retransmissions."],["MqttOptions",""],["Publisher",""],["Subscriber",""]]});
+initSidebarItems({"enum":[["Error",""],["QoS",""]],"struct":[["MqttClient","Handles commands from Publisher and Subscriber. Saves MQTT state and takes care of retransmissions."],["MqttOptions",""],["Publisher",""],["Subscriber",""]],"type":[["Result",""]]});

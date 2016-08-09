@@ -117,6 +117,7 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
 </pre><pre class='rust '>
 
 <span class='doccomment'>//! A fast, lock free Mqtt client implementation in Rust.</span>
@@ -188,6 +189,7 @@
 <span class='kw'>mod</span> <span class='ident'>subscriber</span>;
 <span class='kw'>mod</span> <span class='ident'>client</span>;
 
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>QualityOfService</span> <span class='kw'>as</span> <span class='ident'>QoS</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>MqttClient</span>;

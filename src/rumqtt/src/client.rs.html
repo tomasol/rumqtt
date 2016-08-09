@@ -1166,6 +1166,7 @@
 <span id="1122">1122</span>
 <span id="1123">1123</span>
 <span id="1124">1124</span>
+<span id="1125">1125</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1184,7 +1185,8 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>tls</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>TlsStream</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>;
-<span class='kw'>use</span> <span class='ident'>jobsteal</span>;
+<span class='comment'>//use jobsteal;</span>
+<span class='kw'>use</span> <span class='ident'>threadpool</span>::<span class='ident'>ThreadPool</span>;
 
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
@@ -1306,7 +1308,7 @@
 
     <span class='doccomment'>/// On message callback</span>
     <span class='kw'>pub</span> <span class='ident'>callback</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>SendableFn</span><span class='op'>&gt;&gt;</span>,
-    <span class='kw'>pub</span> <span class='ident'>pool</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>jobsteal</span>::<span class='ident'>Pool</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>pool</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>ThreadPool</span><span class='op'>&gt;</span>,
 }
 
 <span class='comment'>// TODO: Use Mio::Handler, Unit test for state machine</span>
@@ -1579,7 +1581,7 @@
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
     {
         <span class='comment'>// Build a pool with 4 threads, including this one.</span>
-        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>jobsteal</span>::<span class='ident'>make_pool</span>(<span class='number'>4</span>).<span class='ident'>expect</span>(<span class='string'>&quot;couldn&#39;t create thread pool&quot;</span>);
+        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>ThreadPool</span>::<span class='ident'>new</span>(<span class='number'>4</span>);
         <span class='self'>self</span>.<span class='ident'>pool</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>pool</span>);
         <span class='self'>self</span>.<span class='ident'>callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
         <span class='self'>self</span>
@@ -1742,7 +1744,7 @@
                         <span class='comment'>// Have a thread pool to handle message callbacks. Take the threadpool as a</span>
                         <span class='comment'>// parameter</span>
                         <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>as_mut</span>().<span class='ident'>unwrap</span>();
-                        <span class='ident'>pool</span>.<span class='ident'>submit</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
+                        <span class='ident'>pool</span>.<span class='ident'>execute</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
                         <span class='comment'>// thread::spawn(move || message_callback(*m));</span>
                     }
                 }

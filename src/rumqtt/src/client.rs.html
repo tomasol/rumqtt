@@ -1167,6 +1167,43 @@
 <span id="1123">1123</span>
 <span id="1124">1124</span>
 <span id="1125">1125</span>
+<span id="1126">1126</span>
+<span id="1127">1127</span>
+<span id="1128">1128</span>
+<span id="1129">1129</span>
+<span id="1130">1130</span>
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
+<span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
+<span id="1161">1161</span>
+<span id="1162">1162</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1185,14 +1222,13 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>tls</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>TlsStream</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>;
-<span class='comment'>//use jobsteal;</span>
 <span class='kw'>use</span> <span class='ident'>threadpool</span>::<span class='ident'>ThreadPool</span>;
 
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
 <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
 <span class='kw'>use</span> <span class='ident'>publisher</span>::<span class='ident'>Publisher</span>;
-<span class='kw'>use</span> <span class='ident'>subscriber</span>::{<span class='ident'>Subscriber</span>, <span class='ident'>SendableFn</span>};
+<span class='kw'>use</span> <span class='ident'>subscriber</span>::<span class='ident'>Subscriber</span>;
 
 <span class='kw'>const</span> <span class='ident'>MIO_PING_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>123</span>;
 <span class='kw'>const</span> <span class='ident'>MIO_QUEUE_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>321</span>;
@@ -1241,8 +1277,8 @@
 <span class='kw'>enum</span> <span class='ident'>HandlePacket</span> {
     <span class='ident'>ConnAck</span>,
     <span class='ident'>Publish</span>(<span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>),
-    <span class='ident'>PubAck</span>,
-    <span class='ident'>PubRec</span>,
+    <span class='ident'>PubAck</span>(<span class='ident'>u16</span>),
+    <span class='ident'>PubRec</span>(<span class='ident'>u16</span>),
     <span class='comment'>// PubRel,</span>
     <span class='ident'>PubComp</span>,
     <span class='ident'>SubAck</span>,
@@ -1252,6 +1288,8 @@
     <span class='ident'>Invalid</span>,
 }
 
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>MessageSendableFn</span> <span class='op'>=</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>PublishSendableFn</span> <span class='op'>=</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Fn</span>(<span class='ident'>u16</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span><span class='op'>&gt;</span>;
 
 <span class='doccomment'>/// Handles commands from Publisher and Subscriber. Saves MQTT</span>
 <span class='doccomment'>/// state and takes care of retransmissions.</span>
@@ -1307,7 +1345,9 @@
     <span class='kw'>pub</span> <span class='ident'>subscriptions</span>: <span class='ident'>VecDeque</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;&gt;</span>,
 
     <span class='doccomment'>/// On message callback</span>
-    <span class='kw'>pub</span> <span class='ident'>callback</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>SendableFn</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>message_callback</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>MessageSendableFn</span><span class='op'>&gt;&gt;</span>,
+    <span class='doccomment'>/// On publish callback</span>
+    <span class='kw'>pub</span> <span class='ident'>publish_callback</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>PublishSendableFn</span><span class='op'>&gt;&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>pool</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>ThreadPool</span><span class='op'>&gt;</span>,
 }
 
@@ -1568,22 +1608,45 @@
             <span class='comment'>// Subscriptions</span>
             <span class='ident'>subscriptions</span>: <span class='ident'>VecDeque</span>::<span class='ident'>new</span>(),
 
-            <span class='comment'>// callback</span>
-            <span class='ident'>callback</span>: <span class='prelude-val'>None</span>,
+            <span class='comment'>// Callbacks</span>
+            <span class='ident'>message_callback</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>publish_callback</span>: <span class='prelude-val'>None</span>,
+
+            <span class='comment'>// Threadpool</span>
             <span class='ident'>pool</span>: <span class='prelude-val'>None</span>,
         }
     }
+    
     <span class='comment'>// Note: Setting callback before subscriber &amp; publisher</span>
     <span class='comment'>// are created ensures that message callbacks are registered</span>
     <span class='comment'>// before subscription &amp; you don&#39;t need to pass callbacks through</span>
     <span class='comment'>// channels (simplifies code)</span>
+
+    <span class='doccomment'>/// Set the message callback.  This is called when a message is </span>
+    <span class='doccomment'>/// received from the broker.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>message_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
     {
-        <span class='comment'>// Build a pool with 4 threads, including this one.</span>
-        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>ThreadPool</span>::<span class='ident'>new</span>(<span class='number'>4</span>);
-        <span class='self'>self</span>.<span class='ident'>pool</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>pool</span>);
-        <span class='self'>self</span>.<span class='ident'>callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
+        <span class='comment'>// Build a pool with 4 threads</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>is_none</span>() {
+            <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>ThreadPool</span>::<span class='ident'>new</span>(<span class='number'>4</span>);
+            <span class='self'>self</span>.<span class='ident'>pool</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>pool</span>);
+        }
+        <span class='self'>self</span>.<span class='ident'>message_callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
+        <span class='self'>self</span>
+    }
+
+    <span class='doccomment'>/// Set the publish callback.  This is called when a published</span>
+    <span class='doccomment'>/// message has been sent to the broker successfully. </span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>publish_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>u16</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
+    {
+        <span class='comment'>// Build a pool with 4 threads</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>is_none</span>() {
+            <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>ThreadPool</span>::<span class='ident'>new</span>(<span class='number'>4</span>);
+            <span class='self'>self</span>.<span class='ident'>pool</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>pool</span>);
+        }
+        <span class='self'>self</span>.<span class='ident'>publish_callback</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>callback</span>)));
         <span class='self'>self</span>
     }
 
@@ -1738,18 +1801,15 @@
 
                 }
                 <span class='ident'>HandlePacket</span>::<span class='ident'>Publish</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> {
-                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>message_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>callback</span> {
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>message_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>message_callback</span> {
                         <span class='kw'>let</span> <span class='ident'>message_callback</span> <span class='op'>=</span> <span class='ident'>message_callback</span>.<span class='ident'>clone</span>();
 
-                        <span class='comment'>// Have a thread pool to handle message callbacks. Take the threadpool as a</span>
-                        <span class='comment'>// parameter</span>
                         <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>as_mut</span>().<span class='ident'>unwrap</span>();
                         <span class='ident'>pool</span>.<span class='ident'>execute</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>message_callback</span>(<span class='op'>*</span><span class='ident'>m</span>));
-                        <span class='comment'>// thread::spawn(move || message_callback(*m));</span>
                     }
                 }
                 <span class='comment'>// Sending a dummy notification saying tha queue size has reduced</span>
-                <span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span> <span class='op'>=&gt;</span> {
+                <span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span>(<span class='ident'>pkid</span>) <span class='op'>=&gt;</span> {
                     <span class='comment'>// Don&#39;t notify everytime q len is &lt; max. This will always be true initially</span>
                     <span class='comment'>// leading to dup notify.</span>
                     <span class='comment'>// Send only for notify() to recover if channel is blocked.</span>
@@ -1759,13 +1819,27 @@
                         <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
+
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>publish_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>publish_callback</span> {
+                        <span class='kw'>let</span> <span class='ident'>publish_callback</span> <span class='op'>=</span> <span class='ident'>publish_callback</span>.<span class='ident'>clone</span>();
+
+                        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>as_mut</span>().<span class='ident'>unwrap</span>();
+                        <span class='ident'>pool</span>.<span class='ident'>execute</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>publish_callback</span>(<span class='ident'>pkid</span>));
+                    }
                 }
                 <span class='comment'>// TODO: Better read from channel again after PubComp instead of PubRec</span>
-                <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span> <span class='op'>=&gt;</span> {
+                <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>pkid</span>) <span class='op'>=&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> {
                         <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
                         <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
+                    }
+
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>publish_callback</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>publish_callback</span> {
+                        <span class='kw'>let</span> <span class='ident'>publish_callback</span> <span class='op'>=</span> <span class='ident'>publish_callback</span>.<span class='ident'>clone</span>();
+
+                        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pool</span>.<span class='ident'>as_mut</span>().<span class='ident'>unwrap</span>();
+                        <span class='ident'>pool</span>.<span class='ident'>execute</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>publish_callback</span>(<span class='ident'>pkid</span>));
                     }
                 }
                 _ <span class='op'>=&gt;</span> <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;packet handler says that he doesn&#39;t care&quot;</span>),
@@ -1832,7 +1906,7 @@
                             }
                         };
                         <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Pub Q Len After Ack @@@ {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>());
-                        <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span>)
+                        <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span>(<span class='ident'>pkid</span>))
                     }
 
                     <span class='comment'>// @ Receives publish packet</span>
@@ -1863,7 +1937,7 @@
 
                         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_pubrel</span>(<span class='ident'>pkid</span>));
                         <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>)));
-                        <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>)
+                        <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>pkid</span>))
                     }
 
                     <span class='comment'>// @ Broker knows that client has the message</span>
@@ -1957,7 +2031,7 @@
                 };
 
                 <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_pubrec</span>(<span class='ident'>pkid</span>));
-                <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>)
+                <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>pkid</span>))
             }
         }
     }

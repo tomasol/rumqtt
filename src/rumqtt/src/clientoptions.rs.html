@@ -242,6 +242,18 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::{<span class='ident'>Path</span>, <span class='ident'>PathBuf</span>};
@@ -262,7 +274,8 @@
     <span class='kw'>pub</span> <span class='ident'>sub_q_len</span>: <span class='ident'>u16</span>,
     <span class='comment'>// wait time for ack beyond which packet(publish/subscribe) will be resent</span>
     <span class='kw'>pub</span> <span class='ident'>queue_timeout</span>: <span class='ident'>u16</span>,
-    <span class='kw'>pub</span> <span class='ident'>tls</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>ca</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>client_cert</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>PathBuf</span>, <span class='ident'>PathBuf</span>)<span class='op'>&gt;</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>MqttOptions</span> {
@@ -281,7 +294,8 @@
             <span class='ident'>pub_q_len</span>: <span class='number'>50</span>,
             <span class='ident'>sub_q_len</span>: <span class='number'>5</span>,
             <span class='ident'>queue_timeout</span>: <span class='number'>60</span>,
-            <span class='ident'>tls</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>ca</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>client_cert</span>: <span class='prelude-val'>None</span>
         }
     }
 }
@@ -412,11 +426,21 @@
         <span class='self'>self</span>
     }
 
-    <span class='doccomment'>/// Set a TLS connection</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_tls</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>cafile</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+    <span class='doccomment'>/// Set CA file for server authentication during TLS connection</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_ca</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>cafile</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span>
     {
-        <span class='self'>self</span>.<span class='ident'>tls</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>cafile</span>.<span class='ident'>as_ref</span>().<span class='ident'>to_path_buf</span>());
+        <span class='self'>self</span>.<span class='ident'>ca</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>cafile</span>.<span class='ident'>as_ref</span>().<span class='ident'>to_path_buf</span>());
+        <span class='self'>self</span>
+    }
+
+    <span class='doccomment'>/// Set client cert and key for server to do client authentication</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_client_cert</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>certfile</span>: <span class='ident'>P</span>, <span class='ident'>keyfile</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+    <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>certfile</span>.<span class='ident'>as_ref</span>().<span class='ident'>to_path_buf</span>();
+        <span class='kw'>let</span> <span class='ident'>k</span> <span class='op'>=</span> <span class='ident'>keyfile</span>.<span class='ident'>as_ref</span>().<span class='ident'>to_path_buf</span>();
+        <span class='self'>self</span>.<span class='ident'>client_cert</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>((<span class='ident'>c</span>, <span class='ident'>k</span>));
         <span class='self'>self</span>
     }
 

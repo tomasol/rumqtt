@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `Publisher` struct in crate `rumqtt`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, Publisher">
+    <meta name="description" content="API documentation for the Rust `MqRequest` struct in crate `rumqtt`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, MqRequest">
 
-    <title>rumqtt::Publisher - Rust</title>
+    <title>rumqtt::MqRequest - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='index.html'>rumqtt</a></p><script>window.sidebarCurrent = {name: 'Publisher', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>rumqtt</a></p><script>window.sidebarCurrent = {name: 'MqRequest', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,27 +43,27 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>rumqtt</a>::<wbr><a class='struct' href=''>Publisher</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>rumqtt</a>::<wbr><a class='struct' href=''>MqRequest</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-400' class='srclink' href='../src/rumqtt/src/publisher.rs.html#13-19' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Publisher {
+               </span><a id='src-400' class='srclink' href='../src/rumqtt/src/request.rs.html#13-19' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct MqRequest {
     pub pub0_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;,
     pub pub1_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;,
     pub pub2_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;,
+    pub subscribe_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>TopicFilter, <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;&gt;,
     pub mionotify_tx: Sender&lt;MioNotification&gt;,
-    pub retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
 }</pre><h2 class='fields'>Fields</h2><span id='structfield.pub0_tx' class='structfield'><code>pub0_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;</code>
                            </span><span class='stab '></span><span id='structfield.pub1_tx' class='structfield'><code>pub1_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;</code>
                            </span><span class='stab '></span><span id='structfield.pub2_tx' class='structfield'><code>pub2_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;Message&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.subscribe_tx' class='structfield'><code>subscribe_tx: <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.SyncSender.html' title='std::sync::mpsc::SyncSender'>SyncSender</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>TopicFilter, <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;&gt;</code>
                            </span><span class='stab '></span><span id='structfield.mionotify_tx' class='structfield'><code>mionotify_tx: Sender&lt;MioNotification&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.retain' class='structfield'><code>retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
-                           </span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.Publisher.html' title='rumqtt::Publisher'>Publisher</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-406' class='srclink' href='../src/rumqtt/src/publisher.rs.html#21-75' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.publish' class='method'><code>fn <a href='#method.publish' class='fnname'>publish</a>(&amp;self, topic: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a>, payload: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='type' href='../rumqtt/type.Result.html' title='rumqtt::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+                           </span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqRequest.html' title='rumqtt::MqRequest'>MqRequest</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-406' class='srclink' href='../src/rumqtt/src/request.rs.html#21-81' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.publish' class='method'><code>fn <a href='#method.publish' class='fnname'>publish</a>(&amp;self, topic: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a>, payload: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='type' href='../rumqtt/type.Result.html' title='rumqtt::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.subscribe' class='method'><code>fn <a href='#method.subscribe' class='fnname'>subscribe</a>(&amp;self, topics: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;) -&gt; <a class='type' href='../rumqtt/type.Result.html' title='rumqtt::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
 <h4 id='method.disconnect' class='method'><code>fn <a href='#method.disconnect' class='fnname'>disconnect</a>(&amp;self) -&gt; <a class='type' href='../rumqtt/type.Result.html' title='rumqtt::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
 <h4 id='method.shutdown' class='method'><code>fn <a href='#method.shutdown' class='fnname'>shutdown</a>(&amp;self) -&gt; <a class='type' href='../rumqtt/type.Result.html' title='rumqtt::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
-<h4 id='method.set_retain' class='method'><code>fn <a href='#method.set_retain' class='fnname'>set_retain</a>(&amp;mut self, retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; &amp;mut Self</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 

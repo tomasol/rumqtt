@@ -1111,6 +1111,19 @@
 <span id="1067">1067</span>
 <span id="1068">1068</span>
 <span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1133,8 +1146,7 @@
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
 <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
-<span class='kw'>use</span> <span class='ident'>publisher</span>::<span class='ident'>Publisher</span>;
-<span class='kw'>use</span> <span class='ident'>subscriber</span>::<span class='ident'>Subscriber</span>;
+<span class='kw'>use</span> <span class='ident'>request</span>::<span class='ident'>MqRequest</span>;
 <span class='kw'>use</span> <span class='ident'>genpack</span>;
 
 <span class='kw'>const</span> <span class='ident'>MIO_PING_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>123</span>;
@@ -1258,7 +1270,6 @@
     <span class='kw'>pub</span> <span class='ident'>pool</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>ThreadPool</span><span class='op'>&gt;</span>,
 }
 
-<span class='comment'>// TODO: Use Mio::Handler, Unit test for state machine</span>
 <span class='kw'>impl</span> <span class='ident'>Handler</span> <span class='kw'>for</span> <span class='ident'>MqttClient</span> {
     <span class='kw'>type</span> <span class='ident'>Timeout</span> <span class='op'>=</span> <span class='ident'>u64</span>;
     <span class='kw'>type</span> <span class='ident'>Message</span> <span class='op'>=</span> <span class='ident'>MioNotification</span>;
@@ -1558,9 +1569,9 @@
     }
 
     <span class='doccomment'>/// Connects to the broker and starts an event loop in a new thread.</span>
-    <span class='doccomment'>/// Returns `Subscriber` and `Publisher` and handles reqests from them.</span>
+    <span class='doccomment'>/// Returns &#39;Request&#39; and handles reqests from it.</span>
     <span class='doccomment'>/// Also handles network events, reconnections and retransmissions.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>start</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>Publisher</span>, <span class='ident'>Subscriber</span>)<span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>start</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>MqRequest</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>event_loop</span> <span class='op'>=</span> <span class='ident'>EventLoop</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='ident'>event_loop</span>.<span class='ident'>channel</span>();
         <span class='self'>self</span>.<span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>mionotify_tx</span>.<span class='ident'>clone</span>());
@@ -1582,24 +1593,19 @@
         <span class='comment'>// start() call should fail if there a problem creating initial tcp</span>
         <span class='comment'>// connection &amp; mqtt connection. Since connections are happening inside thread,</span>
         <span class='comment'>// this method should be informed to return error instead of</span>
-        <span class='comment'>// (publisher, subscriber) in case connection fails.</span>
+        <span class='comment'>// Request in case connection fails.</span>
         <span class='kw'>let</span> (<span class='ident'>connsync_tx</span>, <span class='ident'>connsync_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>MqttStatus</span><span class='op'>&gt;</span>(<span class='number'>1</span>);
         <span class='self'>self</span>.<span class='ident'>connsync_tx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>connsync_tx</span>);
 
         <span class='kw'>let</span> (<span class='ident'>streamupdate_tx</span>, <span class='ident'>streamupdate_rx</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>sync_channel</span>::<span class='op'>&lt;</span><span class='ident'>NetworkStream</span><span class='op'>&gt;</span>(<span class='number'>1</span>);
         <span class='self'>self</span>.<span class='ident'>streamupdate_tx</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>streamupdate_tx</span>.<span class='ident'>clone</span>());
 
-        <span class='comment'>// @ Create &#39;publisher&#39; and &#39;subscriber&#39;</span>
+        <span class='comment'>// @ Create Request through which user interacts</span>
         <span class='comment'>// @ These are the handles using which user interacts with rumqtt.</span>
-        <span class='kw'>let</span> <span class='ident'>publisher</span> <span class='op'>=</span> <span class='ident'>Publisher</span> {
+        <span class='kw'>let</span> <span class='ident'>mq_request</span> <span class='op'>=</span> <span class='ident'>MqRequest</span> {
             <span class='ident'>pub0_tx</span>: <span class='ident'>pub0_tx</span>,
             <span class='ident'>pub1_tx</span>: <span class='ident'>pub1_tx</span>,
             <span class='ident'>pub2_tx</span>: <span class='ident'>pub2_tx</span>,
-            <span class='ident'>mionotify_tx</span>: <span class='ident'>mionotify_tx</span>.<span class='ident'>clone</span>(),
-            <span class='ident'>retain</span>: <span class='bool-val'>false</span>,
-        };
-
-        <span class='kw'>let</span> <span class='ident'>subscriber</span> <span class='op'>=</span> <span class='ident'>Subscriber</span> {
             <span class='ident'>subscribe_tx</span>: <span class='ident'>sub_tx</span>,
             <span class='ident'>mionotify_tx</span>: <span class='ident'>mionotify_tx</span>.<span class='ident'>clone</span>(),
         };
@@ -1657,7 +1663,7 @@
 
         <span class='kw'>let</span> <span class='ident'>conn</span> <span class='op'>=</span> <span class='ident'>connsync_rx</span>.<span class='ident'>recv</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Connection sync recv error&quot;</span>);
         <span class='kw'>match</span> <span class='ident'>conn</span> {
-            <span class='ident'>MqttStatus</span>::<span class='ident'>Success</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>((<span class='ident'>publisher</span>, <span class='ident'>subscriber</span>)),
+            <span class='ident'>MqttStatus</span>::<span class='ident'>Success</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>mq_request</span>),
             <span class='ident'>MqttStatus</span>::<span class='ident'>Failed</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>ConnectionAbort</span>),
         }
     }
@@ -2162,6 +2168,26 @@
         <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_pkid</span>;
         <span class='self'>self</span>.<span class='ident'>last_pkid</span> <span class='op'>=</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span> <span class='op'>+</span> <span class='number'>1</span>);
         <span class='self'>self</span>.<span class='ident'>last_pkid</span>
+    }
+}
+
+<span class='comment'>// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>test</span> {
+    <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>MqttClient</span>;
+
+    <span class='kw'>fn</span> <span class='ident'>qos1_offline_buffer</span>() {
+        <span class='kw'>let</span> <span class='ident'>client_options</span> <span class='op'>=</span> <span class='ident'>MqttOptions</span>::<span class='ident'>new</span>()
+            .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
+            .<span class='ident'>set_reconnect</span>(<span class='number'>5</span>)
+            .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-reconnect-client&quot;</span>)
+            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+
+        <span class='kw'>let</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
+        <span class='comment'>// Connects to a broker and returns a `Publisher` and `Subscriber`</span>
+        <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>mq_client</span>.<span class='ident'>start</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Coudn&#39;t start&quot;</span>);
     }
 }
 

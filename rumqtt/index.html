@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/rumqtt/src/lib.rs.html#2-77' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/rumqtt/src/lib.rs.html#2-79' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A fast, lock free Mqtt client implementation in Rust.</p>
 
 <p><strong>NOTE</strong>: Though (almost) everything in the spec is working, this crate is
@@ -61,26 +61,30 @@ issue/pullrequest.</p>
 
 <h1 id='connecting-to-a-broker' class='section-header'><a href='#connecting-to-a-broker'>Connecting to a broker</a></h1>
 <pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>rumqtt</span>::{<span class='ident'>MqttOptions</span>, <span class='ident'>MqttClient</span>, <span class='ident'>QoS</span>};
 <span class='comment'>// Specify client connection opthons and which broker to connect to</span>
 <span class='kw'>let</span> <span class='ident'>client_options</span> <span class='op'>=</span> <span class='ident'>MqttOptions</span>::<span class='ident'>new</span>()
                                   .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
                                   .<span class='ident'>set_reconnect</span>(<span class='number'>3</span>)
-                                  .<span class='ident'>set_client_id</span>(<span class='string'>&quot;qos0-stress-publish&quot;</span>)
+                                  .<span class='ident'>set_client_id</span>(<span class='string'>&quot;rumqtt-docs&quot;</span>)
                                   .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
 
-<span class='comment'>// Connects to a broker and returns a `Publisher` and `Subscriber`.</span>
+<span class='comment'>// Connects to a broker and returns a `Request` object for making mqtt</span>
+<span class='comment'>// requests</span>
+<span class='kw'>let</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
+
 <span class='comment'>// `.message_callback` is optional if you don&#39;t want to subscribe</span>
 <span class='comment'>// to any topic.</span>
-<span class='kw'>let</span> (<span class='ident'>publisher</span>, <span class='ident'>subscriber</span>) <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>)
-.<span class='ident'>message_callback</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>message</span><span class='op'>|</span> {
-       <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;message --&gt; {:?}&quot;</span>, <span class='ident'>message</span>);
-})
-.<span class='ident'>start</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Coudn&#39;t start&quot;</span>);</pre>
+<span class='kw'>let</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>mq_client</span>.<span class='ident'>message_callback</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>message</span><span class='op'>|</span> {
+    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;message --&gt; {:?}&quot;</span>, <span class='ident'>message</span>);
+});
+
+<span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>mq_client</span>.<span class='ident'>start</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Coudn&#39;t start&quot;</span>);</pre>
 
 <h1 id='publishing' class='section-header'><a href='#publishing'>Publishing</a></h1>
 <pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='ident'>payload</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}. hello rust&quot;</span>, <span class='ident'>i</span>);
-<span class='ident'>publisher</span>.<span class='ident'>publish</span>(<span class='string'>&quot;hello/rust&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level1</span>, <span class='ident'>payload</span>.<span class='ident'>into_bytes</span>())
+<span class='ident'>request</span>.<span class='ident'>publish</span>(<span class='string'>&quot;hello/rust&quot;</span>, <span class='bool-val'>false</span>, <span class='ident'>QoS</span>::<span class='ident'>Level1</span>, <span class='ident'>payload</span>.<span class='ident'>into_bytes</span>())
          .<span class='ident'>expect</span>(<span class='string'>&quot;Publish failure&quot;</span>);</pre>
 
 <h1 id='subscribing' class='section-header'><a href='#subscribing'>Subscribing</a></h1>
@@ -88,9 +92,16 @@ issue/pullrequest.</p>
 <span class='kw'>let</span> <span class='ident'>topics</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='string'>&quot;hello/+/world&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level0</span>),
                   (<span class='string'>&quot;hello/rust&quot;</span>, <span class='ident'>QoS</span>::<span class='ident'>Level1</span>)];
 
-<span class='ident'>subscriber</span>.<span class='ident'>subscribe</span>(<span class='ident'>topics</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Subcription failure&quot;</span>);</pre>
+<span class='ident'>request</span>.<span class='ident'>subscribe</span>(<span class='ident'>topics</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Subcription failure&quot;</span>);</pre>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.MqRequest.html'
+                                  title='rumqtt::MqRequest'>MqRequest</a></td>
+                           <td class='docblock short'>
+                                
+                           </td>
+                       </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.MqttClient.html'
                                   title='rumqtt::MqttClient'>MqttClient</a></td>
@@ -102,20 +113,6 @@ state and takes care of retransmissions.</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.MqttOptions.html'
                                   title='rumqtt::MqttOptions'>MqttOptions</a></td>
-                           <td class='docblock short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Publisher.html'
-                                  title='rumqtt::Publisher'>Publisher</a></td>
-                           <td class='docblock short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Subscriber.html'
-                                  title='rumqtt::Subscriber'>Subscriber</a></td>
                            <td class='docblock short'>
                                 
                            </td>

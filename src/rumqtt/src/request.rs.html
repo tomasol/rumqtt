@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/publisher.rs`.">
+    <meta name="description" content="Source to the Rust file `src/request.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>publisher.rs.html -- source</title>
+    <title>request.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
@@ -117,6 +117,12 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::<span class='ident'>SyncSender</span>;
@@ -124,22 +130,22 @@
 
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='prelude-ty'>Result</span>;
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
-<span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>QualityOfService</span>;
+<span class='kw'>use</span> <span class='ident'>mqtt</span>::{<span class='ident'>QualityOfService</span>, <span class='ident'>TopicFilter</span>};
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_name</span>::<span class='ident'>TopicName</span>;
 
 <span class='kw'>use</span> <span class='ident'>client</span>::{<span class='ident'>MioNotification</span>, <span class='ident'>PubNotify</span>};
 
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Publisher</span> {
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MqRequest</span> {
     <span class='kw'>pub</span> <span class='ident'>pub0_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>pub1_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>pub2_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>subscribe_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>mionotify_tx</span>: <span class='ident'>Sender</span><span class='op'>&lt;</span><span class='ident'>MioNotification</span><span class='op'>&gt;</span>,
-    <span class='kw'>pub</span> <span class='ident'>retain</span>: <span class='ident'>bool</span>,
 }
 
-<span class='kw'>impl</span> <span class='ident'>Publisher</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>publish</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>topic</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>qos</span>: <span class='ident'>QualityOfService</span>, <span class='ident'>payload</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>MqRequest</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>publish</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>topic</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>retain</span>: <span class='ident'>bool</span>, <span class='ident'>qos</span>: <span class='ident'>QualityOfService</span>, <span class='ident'>payload</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
 
         <span class='kw'>let</span> <span class='ident'>topic</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TopicName</span>::<span class='ident'>new</span>(<span class='ident'>topic</span>.<span class='ident'>to_string</span>()));
         <span class='kw'>let</span> <span class='ident'>qos_pkid</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>qos</span> {
@@ -151,7 +157,7 @@
         <span class='comment'>// TODO: Why are qos and pkid in the same structure</span>
         <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='ident'>Message</span> {
             <span class='ident'>topic</span>: <span class='ident'>topic</span>,
-            <span class='ident'>retain</span>: <span class='self'>self</span>.<span class='ident'>retain</span>,
+            <span class='ident'>retain</span>: <span class='ident'>retain</span>,
             <span class='ident'>qos</span>: <span class='ident'>qos_pkid</span>,
             <span class='comment'>// Optimizes clones</span>
             <span class='ident'>payload</span>: <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>payload</span>),
@@ -177,6 +183,18 @@
         <span class='prelude-val'>Ok</span>(())
     }
 
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>subscribe</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>topics</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sub_topics</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[];
+        <span class='kw'>for</span> <span class='ident'>topic</span> <span class='kw'>in</span> <span class='ident'>topics</span> {
+            <span class='kw'>let</span> <span class='ident'>topic</span> <span class='op'>=</span> (<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TopicFilter</span>::<span class='ident'>new_checked</span>(<span class='ident'>topic</span>.<span class='number'>0</span>)), <span class='ident'>topic</span>.<span class='number'>1</span>);
+            <span class='ident'>sub_topics</span>.<span class='ident'>push</span>(<span class='ident'>topic</span>);
+        }
+
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>subscribe_tx</span>.<span class='ident'>send</span>(<span class='ident'>sub_topics</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Sub</span>));
+        <span class='prelude-val'>Ok</span>(())
+    }
+
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>disconnect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Disconnect</span>));
         <span class='prelude-val'>Ok</span>(())
@@ -185,12 +203,6 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>shutdown</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Shutdown</span>));
         <span class='prelude-val'>Ok</span>(())
-    }
-
-    <span class='comment'>// TODO: Add a different publish_retain method</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_retain</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>retain</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>Self</span> {
-        <span class='self'>self</span>.<span class='ident'>retain</span> <span class='op'>=</span> <span class='ident'>retain</span>;
-        <span class='self'>self</span>
     }
 }
 </pre>

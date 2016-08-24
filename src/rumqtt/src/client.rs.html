@@ -1111,101 +1111,6 @@
 <span id="1067">1067</span>
 <span id="1068">1068</span>
 <span id="1069">1069</span>
-<span id="1070">1070</span>
-<span id="1071">1071</span>
-<span id="1072">1072</span>
-<span id="1073">1073</span>
-<span id="1074">1074</span>
-<span id="1075">1075</span>
-<span id="1076">1076</span>
-<span id="1077">1077</span>
-<span id="1078">1078</span>
-<span id="1079">1079</span>
-<span id="1080">1080</span>
-<span id="1081">1081</span>
-<span id="1082">1082</span>
-<span id="1083">1083</span>
-<span id="1084">1084</span>
-<span id="1085">1085</span>
-<span id="1086">1086</span>
-<span id="1087">1087</span>
-<span id="1088">1088</span>
-<span id="1089">1089</span>
-<span id="1090">1090</span>
-<span id="1091">1091</span>
-<span id="1092">1092</span>
-<span id="1093">1093</span>
-<span id="1094">1094</span>
-<span id="1095">1095</span>
-<span id="1096">1096</span>
-<span id="1097">1097</span>
-<span id="1098">1098</span>
-<span id="1099">1099</span>
-<span id="1100">1100</span>
-<span id="1101">1101</span>
-<span id="1102">1102</span>
-<span id="1103">1103</span>
-<span id="1104">1104</span>
-<span id="1105">1105</span>
-<span id="1106">1106</span>
-<span id="1107">1107</span>
-<span id="1108">1108</span>
-<span id="1109">1109</span>
-<span id="1110">1110</span>
-<span id="1111">1111</span>
-<span id="1112">1112</span>
-<span id="1113">1113</span>
-<span id="1114">1114</span>
-<span id="1115">1115</span>
-<span id="1116">1116</span>
-<span id="1117">1117</span>
-<span id="1118">1118</span>
-<span id="1119">1119</span>
-<span id="1120">1120</span>
-<span id="1121">1121</span>
-<span id="1122">1122</span>
-<span id="1123">1123</span>
-<span id="1124">1124</span>
-<span id="1125">1125</span>
-<span id="1126">1126</span>
-<span id="1127">1127</span>
-<span id="1128">1128</span>
-<span id="1129">1129</span>
-<span id="1130">1130</span>
-<span id="1131">1131</span>
-<span id="1132">1132</span>
-<span id="1133">1133</span>
-<span id="1134">1134</span>
-<span id="1135">1135</span>
-<span id="1136">1136</span>
-<span id="1137">1137</span>
-<span id="1138">1138</span>
-<span id="1139">1139</span>
-<span id="1140">1140</span>
-<span id="1141">1141</span>
-<span id="1142">1142</span>
-<span id="1143">1143</span>
-<span id="1144">1144</span>
-<span id="1145">1145</span>
-<span id="1146">1146</span>
-<span id="1147">1147</span>
-<span id="1148">1148</span>
-<span id="1149">1149</span>
-<span id="1150">1150</span>
-<span id="1151">1151</span>
-<span id="1152">1152</span>
-<span id="1153">1153</span>
-<span id="1154">1154</span>
-<span id="1155">1155</span>
-<span id="1156">1156</span>
-<span id="1157">1157</span>
-<span id="1158">1158</span>
-<span id="1159">1159</span>
-<span id="1160">1160</span>
-<span id="1161">1161</span>
-<span id="1162">1162</span>
-<span id="1163">1163</span>
-<span id="1164">1164</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>;
@@ -1216,10 +1121,9 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::<span class='ident'>TcpStream</span>;
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>mqtt</span>::{<span class='ident'>Encodable</span>, <span class='ident'>Decodable</span>, <span class='ident'>QualityOfService</span>, <span class='ident'>TopicFilter</span>};
+<span class='kw'>use</span> <span class='ident'>mqtt</span>::{<span class='ident'>Decodable</span>, <span class='ident'>QualityOfService</span>, <span class='ident'>TopicFilter</span>};
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>control</span>::<span class='ident'>variable_header</span>::{<span class='ident'>ConnectReturnCode</span>, <span class='ident'>PacketIdentifier</span>};
-<span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_name</span>::<span class='ident'>TopicName</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>tls</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>SslContext</span>};
@@ -1231,6 +1135,7 @@
 <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
 <span class='kw'>use</span> <span class='ident'>publisher</span>::<span class='ident'>Publisher</span>;
 <span class='kw'>use</span> <span class='ident'>subscriber</span>::<span class='ident'>Subscriber</span>;
+<span class='kw'>use</span> <span class='ident'>genpack</span>;
 
 <span class='kw'>const</span> <span class='ident'>MIO_PING_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>123</span>;
 <span class='kw'>const</span> <span class='ident'>MIO_QUEUE_TIMER</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>321</span>;
@@ -1529,7 +1434,7 @@
                 <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
 
                 <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
-                <span class='self'>self</span>.<span class='ident'>disconnect_block</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
+                <span class='self'>self</span>.<span class='ident'>disconnect_block</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
                 <span class='kw'>loop</span> {
                     <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>_try_reconnect</span>() {
                         <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> <span class='kw'>break</span>,
@@ -1579,16 +1484,16 @@
             <span class='comment'>// State</span>
             <span class='ident'>last_flush</span>: <span class='ident'>Instant</span>::<span class='ident'>now</span>(),
             <span class='ident'>last_pkid</span>: <span class='ident'>PacketIdentifier</span>(<span class='number'>0</span>),
-            <span class='ident'>await_ping</span>: <span class='boolvalue'>false</span>,
+            <span class='ident'>await_ping</span>: <span class='bool-val'>false</span>,
             <span class='ident'>state</span>: <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>,
-            <span class='ident'>initial_connect</span>: <span class='boolvalue'>true</span>,
+            <span class='ident'>initial_connect</span>: <span class='bool-val'>true</span>,
             <span class='ident'>opts</span>: <span class='ident'>opts</span>,
             <span class='ident'>pub0_channel_pending</span>: <span class='number'>0</span>,
             <span class='ident'>pub1_channel_pending</span>: <span class='number'>0</span>,
             <span class='ident'>pub2_channel_pending</span>: <span class='number'>0</span>,
-            <span class='ident'>disconnect_block</span>: <span class='boolvalue'>false</span>,
-            <span class='ident'>should_qos1_block</span>: <span class='boolvalue'>false</span>,
-            <span class='ident'>should_qos2_block</span>: <span class='boolvalue'>false</span>,
+            <span class='ident'>disconnect_block</span>: <span class='bool-val'>false</span>,
+            <span class='ident'>should_qos1_block</span>: <span class='bool-val'>false</span>,
+            <span class='ident'>should_qos2_block</span>: <span class='bool-val'>false</span>,
             <span class='ident'>no_of_reconnections</span>: <span class='number'>0</span>,
 
             <span class='comment'>// Channels</span>
@@ -1618,13 +1523,13 @@
             <span class='ident'>pool</span>: <span class='prelude-val'>None</span>,
         }
     }
-    
+
     <span class='comment'>// Note: Setting callback before subscriber &amp; publisher</span>
     <span class='comment'>// are created ensures that message callbacks are registered</span>
     <span class='comment'>// before subscription &amp; you don&#39;t need to pass callbacks through</span>
     <span class='comment'>// channels (simplifies code)</span>
 
-    <span class='doccomment'>/// Set the message callback.  This is called when a message is </span>
+    <span class='doccomment'>/// Set the message callback.  This is called when a message is</span>
     <span class='doccomment'>/// received from the broker.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>message_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Message</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
@@ -1639,7 +1544,7 @@
     }
 
     <span class='doccomment'>/// Set the publish callback.  This is called when a published</span>
-    <span class='doccomment'>/// message has been sent to the broker successfully. </span>
+    <span class='doccomment'>/// message has been sent to the broker successfully.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>publish_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>u16</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>
     {
@@ -1691,7 +1596,7 @@
             <span class='ident'>pub1_tx</span>: <span class='ident'>pub1_tx</span>,
             <span class='ident'>pub2_tx</span>: <span class='ident'>pub2_tx</span>,
             <span class='ident'>mionotify_tx</span>: <span class='ident'>mionotify_tx</span>.<span class='ident'>clone</span>(),
-            <span class='ident'>retain</span>: <span class='boolvalue'>false</span>,
+            <span class='ident'>retain</span>: <span class='bool-val'>false</span>,
         };
 
         <span class='kw'>let</span> <span class='ident'>subscriber</span> <span class='op'>=</span> <span class='ident'>Subscriber</span> {
@@ -1775,7 +1680,7 @@
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>initial_connect</span> {
                         <span class='kw'>let</span> <span class='ident'>connsync_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>connsync_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
                         <span class='ident'>connsync_tx</span>.<span class='ident'>send</span>(<span class='ident'>MqttStatus</span>::<span class='ident'>Success</span>).<span class='ident'>expect</span>(<span class='string'>&quot;ConnSync Tx Send Error&quot;</span>);
-                        <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='self'>self</span>.<span class='ident'>initial_connect</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
                     } <span class='kw'>else</span> {
                         <span class='comment'>// Resubscribe after a reconnection.</span>
                         <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
@@ -1788,7 +1693,7 @@
                         <span class='comment'>// This notifies notify() to publish channel pending messages after</span>
                         <span class='comment'>// reconnect.</span>
                         <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
-                        <span class='self'>self</span>.<span class='ident'>disconnect_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='self'>self</span>.<span class='ident'>disconnect_block</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS0Reconnect</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1Reconnect</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2Reconnect</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
@@ -1818,7 +1723,7 @@
                     <span class='comment'>// Blocking = true is set during publish if pub q len is more than desired.</span>
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> {
                         <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
-                        <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS1QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
 
@@ -1833,7 +1738,7 @@
                 <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>pkid</span>) <span class='op'>=&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> {
                         <span class='kw'>let</span> <span class='ident'>mionotify_tx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mionotify_tx</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
-                        <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
                         <span class='ident'>mionotify_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Pub</span>(<span class='ident'>PubNotify</span>::<span class='ident'>QoS2QueueDown</span>)).<span class='ident'>expect</span>(<span class='string'>&quot;MioNotify Tx Send Error&quot;</span>);
                     }
 
@@ -1881,7 +1786,7 @@
                     }
 
                     <span class='ident'>VariablePacket</span>::<span class='ident'>PingrespPacket</span>(..) <span class='op'>=&gt;</span> {
-                        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+                        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
                         <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PingResp</span>)
                     }
 
@@ -2039,13 +1944,20 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>_connect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>connect</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_connect_packet</span>());
+        <span class='kw'>let</span> <span class='ident'>connect</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_connect_packet</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>.<span class='ident'>clone</span>(),
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span>,
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span>,
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will</span>.<span class='ident'>clone</span>(),
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will_qos</span>,
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will_retain</span>,
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>username</span>.<span class='ident'>clone</span>(),
+                                                            <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>password</span>.<span class='ident'>clone</span>()));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>connect</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>_disconnect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>disconnect</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_disconnect_packet</span>());
+        <span class='kw'>let</span> <span class='ident'>disconnect</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_disconnect_packet</span>());
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>disconnect</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
@@ -2124,8 +2036,8 @@
     <span class='kw'>fn</span> <span class='ident'>_force_retransmit</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span> {
             <span class='comment'>// We are anyway going to clear the queues if they aren&#39;t empty</span>
-            <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
-            <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+            <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
+            <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
             <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>state</span> {
                 <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> <span class='op'>=&gt;</span> {
                     <span class='kw'>for</span> <span class='ident'>index</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() {
@@ -2146,21 +2058,21 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>ping</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>ping</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_pingreq_packet</span>());
-        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
+        <span class='kw'>let</span> <span class='ident'>ping</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_pingreq_packet</span>());
+        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>ping</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
 
     <span class='kw'>fn</span> <span class='ident'>_unbind</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>shutdown</span>(<span class='ident'>Shutdown</span>::<span class='ident'>Both</span>);
-        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>await_ping</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
         <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
         <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;  Disconnected {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>);
     }
 
     <span class='kw'>fn</span> <span class='ident'>_subscribe</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>topics</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>subscribe_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_subscribe_packet</span>(<span class='ident'>topics</span>));
+        <span class='kw'>let</span> <span class='ident'>subscribe_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_subscribe_packet</span>(<span class='ident'>topics</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>subscribe_packet</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
@@ -2173,20 +2085,20 @@
         <span class='kw'>let</span> <span class='ident'>payload</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>message</span>.<span class='ident'>payload</span>;
         <span class='kw'>let</span> <span class='ident'>retain</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>retain</span>;
 
-        <span class='kw'>let</span> <span class='ident'>publish_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_publish_packet</span>(<span class='ident'>topic</span>, <span class='ident'>qos</span>, <span class='ident'>retain</span>, <span class='ident'>payload</span>.<span class='ident'>clone</span>()));
+        <span class='kw'>let</span> <span class='ident'>publish_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_publish_packet</span>(<span class='ident'>topic</span>, <span class='ident'>qos</span>, <span class='ident'>retain</span>, <span class='ident'>payload</span>.<span class='ident'>clone</span>()));
 
         <span class='kw'>match</span> <span class='ident'>message</span>.<span class='ident'>qos</span> {
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level0</span> <span class='op'>=&gt;</span> (),
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level1</span>(_) <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> {
-                    <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
+                    <span class='self'>self</span>.<span class='ident'>should_qos1_block</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
                 }
             }
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level2</span>(_) <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> {
-                    <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
+                    <span class='self'>self</span>.<span class='ident'>should_qos2_block</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
                 }
             }
         }
@@ -2199,25 +2111,25 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>_puback</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>puback_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_puback_packet</span>(<span class='ident'>pkid</span>));
+        <span class='kw'>let</span> <span class='ident'>puback_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_puback_packet</span>(<span class='ident'>pkid</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>puback_packet</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
 
     <span class='kw'>fn</span> <span class='ident'>_pubrec</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pubrec_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_pubrec_packet</span>(<span class='ident'>pkid</span>));
+        <span class='kw'>let</span> <span class='ident'>pubrec_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_pubrec_packet</span>(<span class='ident'>pkid</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>pubrec_packet</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
 
     <span class='kw'>fn</span> <span class='ident'>_pubrel</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pubrel_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_pubrel_packet</span>(<span class='ident'>pkid</span>));
+        <span class='kw'>let</span> <span class='ident'>pubrel_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_pubrel_packet</span>(<span class='ident'>pkid</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>pubrel_packet</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
 
     <span class='kw'>fn</span> <span class='ident'>_pubcomp</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>puback_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_generate_pubcomp_packet</span>(<span class='ident'>pkid</span>));
+        <span class='kw'>let</span> <span class='ident'>puback_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_pubcomp_packet</span>(<span class='ident'>pkid</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>puback_packet</span>));
         <span class='self'>self</span>.<span class='ident'>_flush</span>()
     }
@@ -2241,108 +2153,6 @@
             }
         };
         <span class='prelude-val'>Ok</span>(())
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_connect_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>connect_packet</span> <span class='op'>=</span> <span class='ident'>ConnectPacket</span>::<span class='ident'>new</span>(<span class='string'>&quot;MQTT&quot;</span>.<span class='ident'>to_owned</span>(), <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>.<span class='ident'>clone</span>().<span class='ident'>unwrap</span>());
-
-        <span class='ident'>connect_packet</span>.<span class='ident'>set_clean_session</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span>);
-
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
-            <span class='ident'>connect_packet</span>.<span class='ident'>set_keep_alive</span>(<span class='ident'>keep_alive</span>);
-        }
-
-        <span class='comment'>// Converting (String, String) -&gt; (TopicName, String)</span>
-        <span class='kw'>let</span> <span class='ident'>will</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will</span> {
-            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>will</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>((<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TopicName</span>::<span class='ident'>new</span>(<span class='ident'>will</span>.<span class='number'>0</span>.<span class='ident'>clone</span>())), <span class='ident'>will</span>.<span class='number'>1</span>.<span class='ident'>clone</span>())),
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-        };
-
-        <span class='kw'>if</span> <span class='ident'>will</span>.<span class='ident'>is_some</span>() {
-            <span class='ident'>connect_packet</span>.<span class='ident'>set_will</span>(<span class='ident'>will</span>);
-            <span class='ident'>connect_packet</span>.<span class='ident'>set_will_qos</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will_qos</span> <span class='kw'>as</span> <span class='ident'>u8</span>);
-            <span class='ident'>connect_packet</span>.<span class='ident'>set_will_retain</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>will_retain</span>);
-        }
-
-        <span class='comment'>// mqtt-protocol APIs are directly handling None cases.</span>
-        <span class='ident'>connect_packet</span>.<span class='ident'>set_user_name</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>username</span>.<span class='ident'>clone</span>());
-        <span class='ident'>connect_packet</span>.<span class='ident'>set_password</span>(<span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>password</span>.<span class='ident'>clone</span>());
-
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>connect_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_disconnect_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>disconnect_packet</span> <span class='op'>=</span> <span class='ident'>DisconnectPacket</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>disconnect_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_pingreq_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pingreq_packet</span> <span class='op'>=</span> <span class='ident'>PingreqPacket</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>pingreq_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_subscribe_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>topics</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>subscribe_packet</span> <span class='op'>=</span> <span class='ident'>SubscribePacket</span>::<span class='ident'>new</span>(<span class='number'>11</span>, <span class='ident'>topics</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>subscribe_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='comment'>// TODO: dup flag</span>
-    <span class='kw'>fn</span> <span class='ident'>_generate_publish_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>,
-                                <span class='ident'>topic</span>: <span class='ident'>TopicName</span>,
-                                <span class='ident'>qos</span>: <span class='ident'>QoSWithPacketIdentifier</span>,
-                                <span class='ident'>retain</span>: <span class='ident'>bool</span>,
-                                <span class='ident'>payload</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>)
-                                <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>publish_packet</span> <span class='op'>=</span> <span class='ident'>PublishPacket</span>::<span class='ident'>new</span>(<span class='ident'>topic</span>, <span class='ident'>qos</span>, <span class='ident'>payload</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-        <span class='ident'>publish_packet</span>.<span class='ident'>set_retain</span>(<span class='ident'>retain</span>);
-        <span class='comment'>// publish_packet.set_dup(dup);</span>
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>publish_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_puback_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>puback_packet</span> <span class='op'>=</span> <span class='ident'>PubackPacket</span>::<span class='ident'>new</span>(<span class='ident'>pkid</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>puback_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_pubrec_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pubrec_packet</span> <span class='op'>=</span> <span class='ident'>PubrecPacket</span>::<span class='ident'>new</span>(<span class='ident'>pkid</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>pubrec_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_pubrel_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pubrel_packet</span> <span class='op'>=</span> <span class='ident'>PubrelPacket</span>::<span class='ident'>new</span>(<span class='ident'>pkid</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>pubrel_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_generate_pubcomp_packet</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>pubcomp_packet</span> <span class='op'>=</span> <span class='ident'>PubcompPacket</span>::<span class='ident'>new</span>(<span class='ident'>pkid</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>pubcomp_packet</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>buf</span>)
     }
 
     <span class='comment'>// http://stackoverflow.</span>

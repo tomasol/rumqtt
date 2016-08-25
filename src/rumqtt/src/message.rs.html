@@ -125,6 +125,9 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><pre class='rust '>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
@@ -144,6 +147,7 @@
 
     <span class='comment'>// TODO: Why does payload need to be atomic</span>
     <span class='kw'>pub</span> <span class='ident'>payload</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>userdata</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>Message</span> {
@@ -158,6 +162,7 @@
             <span class='ident'>qos</span>: <span class='ident'>publish</span>.<span class='ident'>qos</span>(),
             <span class='ident'>retain</span>: <span class='ident'>publish</span>.<span class='ident'>retain</span>(),
             <span class='ident'>payload</span>: <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>publish</span>.<span class='ident'>payload</span>().<span class='ident'>clone</span>()),
+            <span class='ident'>userdata</span>: <span class='prelude-val'>None</span>,
         }))
     }
 
@@ -206,6 +211,7 @@
             <span class='ident'>qos</span>: <span class='ident'>qos</span>,
             <span class='ident'>retain</span>: <span class='self'>self</span>.<span class='ident'>retain</span>,
             <span class='ident'>payload</span>: <span class='self'>self</span>.<span class='ident'>payload</span>.<span class='ident'>clone</span>(),
+            <span class='ident'>userdata</span>: <span class='self'>self</span>.<span class='ident'>userdata</span>.<span class='ident'>clone</span>(),
         })
     }
 }

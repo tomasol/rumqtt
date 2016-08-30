@@ -112,16 +112,33 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::{<span class='self'>self</span>, <span class='ident'>RecvError</span>, <span class='ident'>TryRecvError</span>};
+
+<span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>timer</span>::<span class='ident'>TimerError</span>;
+<span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>channel</span>::<span class='ident'>SendError</span>;
+<span class='kw'>use</span> <span class='ident'>openssl</span>::<span class='ident'>ssl</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_name</span>::<span class='ident'>TopicNameError</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_filter</span>::<span class='ident'>TopicFilterError</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>control</span>::<span class='ident'>variable_header</span>::<span class='ident'>ConnectReturnCode</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::{<span class='ident'>RecvError</span>, <span class='ident'>SendError</span>};
-<span class='kw'>use</span> <span class='ident'>mio</span>;
-<span class='kw'>use</span> <span class='ident'>openssl</span>::<span class='ident'>ssl</span>;
+
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>SslError</span> <span class='op'>=</span> <span class='ident'>ssl</span>::<span class='ident'>error</span>::<span class='ident'>SslError</span>;
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>result</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
@@ -141,6 +158,10 @@
     <span class='ident'>ConnectionRefused</span>(<span class='ident'>ConnectReturnCode</span>),
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
     <span class='ident'>InvalidCert</span>(<span class='ident'>String</span>),
+    <span class='ident'>SendError</span>,
+    <span class='ident'>Recv</span>(<span class='ident'>RecvError</span>),
+    <span class='ident'>TryRecv</span>(<span class='ident'>TryRecvError</span>),
+    <span class='ident'>Timer</span>(<span class='ident'>TimerError</span>),
     <span class='ident'>NoStream</span>,
     <span class='ident'>TopicName</span>,
     <span class='ident'>TopicFilter</span>,
@@ -148,7 +169,6 @@
     <span class='ident'>MqttPacket</span>,
     <span class='ident'>Ssl</span>(<span class='ident'>SslError</span>),
     <span class='ident'>EventLoop</span>,
-    <span class='ident'>MioNotify</span>,
     <span class='ident'>Read</span>,
 }
 
@@ -165,23 +185,31 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>SendError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>SendError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MioNotify</span> }
+    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>SendError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>SendError</span> }
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>mpsc</span>::<span class='ident'>SendError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>mpsc</span>::<span class='ident'>SendError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>SendError</span> }
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>RecvError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>RecvError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MioNotify</span> }
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>RecvError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>Recv</span>(<span class='ident'>err</span>) }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Packet</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>PacketError</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>PacketError</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MqttPacket</span> }
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>TryRecvError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>TryRecvError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>TryRecv</span>(<span class='ident'>err</span>) }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>mio</span>::<span class='ident'>NotifyError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>mio</span>::<span class='ident'>NotifyError</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MioNotify</span> }
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>P</span>: <span class='ident'>Packet</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>PacketError</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>P</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(_: <span class='ident'>PacketError</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>P</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>MqttPacket</span> }
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>SslError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>e</span>: <span class='ident'>SslError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>Ssl</span>(<span class='ident'>e</span>) }
+}
+
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>TimerError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>e</span>: <span class='ident'>TimerError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>Timer</span>(<span class='ident'>e</span>) }
 }
 </pre>
 </section>

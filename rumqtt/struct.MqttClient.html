@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-644' class='srclink' href='../src/rumqtt/src/client.rs.html#81-146' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-645' class='srclink' href='../src/rumqtt/src/client.rs.html#81-146' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MqttClient {
     pub addr: <a class='enum' href='https://doc.rust-lang.org/nightly/std/net/addr/enum.SocketAddr.html' title='std::net::addr::SocketAddr'>SocketAddr</a>,
     pub opts: <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a>,
@@ -131,7 +131,7 @@ For QoS 1. Stores outgoing publishes</p>
 </div><span id='structfield.pool' class='structfield'><code>pool: ThreadPool</code>
                            </span><span class='stab '></span><span id='structfield.poll' class='structfield'><code>poll: Poll</code>
                            </span><span class='stab '></span><div class='docblock'><p>Poll</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqttClient.html' title='rumqtt::MqttClient'>MqttClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-681' class='srclink' href='../src/rumqtt/src/client.rs.html#148-1190' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqttClient.html' title='rumqtt::MqttClient'>MqttClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-682' class='srclink' href='../src/rumqtt/src/client.rs.html#148-1204' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(opts: <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a>) -&gt; Self</code></h4>
 <h4 id='method.message_callback' class='method'><code>fn <a href='#method.message_callback' class='fnname'>message_callback</a>&lt;F&gt;(self, callback: F) -&gt; Self <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(<a class='struct' href='../rumqtt/struct.Message.html' title='rumqtt::Message'>Message</a>) + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'static</span></code></h4>
 <div class='docblock'><p>Set the message callback.  This is called when a message is

@@ -1445,6 +1445,7 @@
 <span id="1401">1401</span>
 <span id="1402">1402</span>
 <span id="1403">1403</span>
+<span id="1404">1404</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::{<span class='ident'>Duration</span>, <span class='ident'>Instant</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>SocketAddr</span>, <span class='ident'>ToSocketAddrs</span>, <span class='ident'>Shutdown</span>};
@@ -2668,6 +2669,8 @@
     <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>MqttClient</span>;
     <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
 
+    <span class='kw'>const</span> <span class='ident'>BROKER_ADDRESS</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;localhost:1883&quot;</span>;
+
     <span class='kw'>fn</span> <span class='ident'>fill_qos1_publish_buffer</span>(<span class='ident'>client</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>MqttClient</span>) {
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>1001</span>..<span class='number'>1101</span> {
             <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Message</span> {
@@ -2700,7 +2703,7 @@
             .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
             .<span class='ident'>set_q_timeout</span>(<span class='number'>5</span>)
             .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-retransmission-client&quot;</span>)
-            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+            .<span class='ident'>broker</span>(<span class='ident'>BROKER_ADDRESS</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
         <span class='ident'>fill_qos1_publish_buffer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mq_client</span>);
@@ -2722,7 +2725,7 @@
         <span class='kw'>let</span> <span class='ident'>client_options</span> <span class='op'>=</span> <span class='ident'>MqttOptions</span>::<span class='ident'>new</span>()
             .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
             .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-forceretransmission-client&quot;</span>)
-            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+            .<span class='ident'>broker</span>(<span class='ident'>BROKER_ADDRESS</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
         <span class='ident'>fill_qos1_publish_buffer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mq_client</span>);
@@ -2734,7 +2737,6 @@
         <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>10</span>, <span class='number'>0</span>));
         <span class='kw'>let</span> <span class='ident'>final_qos1_length</span> <span class='op'>=</span> <span class='ident'>request</span>.<span class='ident'>qos1_q_len</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Stats Request Error&quot;</span>);
         <span class='kw'>let</span> <span class='ident'>final_qos2_length</span> <span class='op'>=</span> <span class='ident'>request</span>.<span class='ident'>qos2_q_len</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Stats Request Error&quot;</span>);
-        <span class='comment'>// println!(&quot;{}, {}&quot;, final_qos1_length, final_qos2_length);</span>
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>final_qos1_length</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>final_qos2_length</span>);
     }
@@ -2745,7 +2747,7 @@
             .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
             .<span class='ident'>set_q_timeout</span>(<span class='number'>5</span>)
             .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-blockunblock-retransmission-client&quot;</span>)
-            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+            .<span class='ident'>broker</span>(<span class='ident'>BROKER_ADDRESS</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
         <span class='ident'>fill_qos1_publish_buffer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mq_client</span>);
@@ -2776,7 +2778,7 @@
             .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
             .<span class='ident'>set_q_timeout</span>(<span class='number'>5</span>)
             .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-blockunblock-reconnect-client&quot;</span>)
-            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+            .<span class='ident'>broker</span>(<span class='ident'>BROKER_ADDRESS</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);
         <span class='ident'>fill_qos1_publish_buffer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mq_client</span>);
@@ -2810,7 +2812,7 @@
             .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
             .<span class='ident'>set_q_timeout</span>(<span class='number'>5</span>)
             .<span class='ident'>set_client_id</span>(<span class='string'>&quot;test-qlen-threshold-client&quot;</span>)
-            .<span class='ident'>broker</span>(<span class='string'>&quot;broker.hivemq.com:1883&quot;</span>);
+            .<span class='ident'>broker</span>(<span class='ident'>BROKER_ADDRESS</span>);
 
         <span class='kw'>let</span> <span class='ident'>q_len</span> <span class='op'>=</span> <span class='ident'>client_options</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span>;
         <span class='kw'>let</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);

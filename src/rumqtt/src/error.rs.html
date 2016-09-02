@@ -113,19 +113,6 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
@@ -145,31 +132,18 @@
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {
-    <span class='ident'>MqttEncode</span>,
-    <span class='ident'>Tls</span>(<span class='ident'>i32</span>),
-    <span class='ident'>Subscribe</span>(<span class='ident'>i32</span>),
-    <span class='ident'>Publish</span>(<span class='ident'>i32</span>),
-    <span class='ident'>AlreadyConnected</span>,
-    <span class='ident'>UnrecognizedPacket</span>,
     <span class='ident'>ConnectionAbort</span>,
-    <span class='ident'>HandshakeFailed</span>,
-    <span class='ident'>Disconnected</span>,
-    <span class='ident'>Timeout</span>,
     <span class='ident'>ConnectionRefused</span>(<span class='ident'>ConnectReturnCode</span>),
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='ident'>InvalidCert</span>(<span class='ident'>String</span>),
     <span class='ident'>SendError</span>,
     <span class='ident'>Recv</span>(<span class='ident'>RecvError</span>),
     <span class='ident'>TryRecv</span>(<span class='ident'>TryRecvError</span>),
     <span class='ident'>Timer</span>(<span class='ident'>TimerError</span>),
-    <span class='ident'>NoStream</span>,
     <span class='ident'>TopicName</span>,
     <span class='ident'>TopicFilter</span>,
     <span class='ident'>NoReconnectTry</span>,
     <span class='ident'>MqttPacket</span>,
     <span class='ident'>Ssl</span>(<span class='ident'>SslError</span>),
-    <span class='ident'>EventLoop</span>,
-    <span class='ident'>Read</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {

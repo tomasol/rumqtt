@@ -187,12 +187,8 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>;
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>channel</span>::<span class='ident'>SyncSender</span>;
 
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='prelude-ty'>Result</span>;
@@ -201,17 +197,17 @@
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_name</span>::<span class='ident'>TopicName</span>;
 
-<span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>MioNotification</span>;
+<span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>MiscNwRequest</span>;
 
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>StatsReq</span> {
-    <span class='ident'>QoS1QLen</span>,
-    <span class='ident'>QoS2QLen</span>,
-}
+<span class='comment'>// pub enum StatsReq {</span>
+<span class='comment'>//     QoS1QLen,</span>
+<span class='comment'>//     QoS2QLen,</span>
+<span class='comment'>// }</span>
 
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>StatsResp</span> {
-    <span class='ident'>QoS1QLen</span>(<span class='ident'>usize</span>),
-    <span class='ident'>QoS2QLen</span>(<span class='ident'>usize</span>),
-}
+<span class='comment'>// pub enum StatsResp {</span>
+<span class='comment'>//     QoS1QLen(usize),</span>
+<span class='comment'>//     QoS2QLen(usize),</span>
+<span class='comment'>// }</span>
 
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MqRequest</span> {
     <span class='comment'>// QoS 0 publish request to eventloop</span>
@@ -223,9 +219,7 @@
     <span class='comment'>// Subscribe request to eventloop</span>
     <span class='kw'>pub</span> <span class='ident'>subscribe_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>TopicFilter</span>, <span class='ident'>QualityOfService</span>)<span class='op'>&gt;&gt;</span>,
     <span class='comment'>// miscellaneous requests to eventloop</span>
-    <span class='kw'>pub</span> <span class='ident'>misc_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>MioNotification</span><span class='op'>&gt;</span>,
-    <span class='kw'>pub</span> <span class='ident'>stats_req_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>StatsReq</span><span class='op'>&gt;</span>,
-    <span class='kw'>pub</span> <span class='ident'>stats_resp_rx</span>: <span class='ident'>mpsc</span>::<span class='ident'>Receiver</span><span class='op'>&lt;</span><span class='ident'>StatsResp</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>misc_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>MiscNwRequest</span><span class='op'>&gt;</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>MqRequest</span> {
@@ -310,34 +304,34 @@
     }
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>disconnect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>misc_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Disconnect</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>misc_tx</span>.<span class='ident'>send</span>(<span class='ident'>MiscNwRequest</span>::<span class='ident'>Disconnect</span>));
         <span class='prelude-val'>Ok</span>(())
     }
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>shutdown</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>misc_tx</span>.<span class='ident'>send</span>(<span class='ident'>MioNotification</span>::<span class='ident'>Shutdown</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>misc_tx</span>.<span class='ident'>send</span>(<span class='ident'>MiscNwRequest</span>::<span class='ident'>Shutdown</span>));
         <span class='prelude-val'>Ok</span>(())
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>qos1_q_len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stats_req_tx</span>.<span class='ident'>send</span>(<span class='ident'>StatsReq</span>::<span class='ident'>QoS1QLen</span>));
-        <span class='kw'>let</span> <span class='ident'>o</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stats_resp_rx</span>.<span class='ident'>recv</span>());
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>StatsResp</span>::<span class='ident'>QoS1QLen</span>(<span class='ident'>r</span>) <span class='op'>=</span> <span class='ident'>o</span> {
-            <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>r</span>);
-        } <span class='kw'>else</span> {
-            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid Stats Response&quot;</span>);
-        }
-    }
+    <span class='comment'>// pub fn qos1_q_len(&amp;self) -&gt; Result&lt;usize&gt; {</span>
+    <span class='comment'>//     try!(self.stats_req_tx.send(StatsReq::QoS1QLen));</span>
+    <span class='comment'>//     let o = try!(self.stats_resp_rx.recv());</span>
+    <span class='comment'>//     if let StatsResp::QoS1QLen(r) = o {</span>
+    <span class='comment'>//         return Ok(r);</span>
+    <span class='comment'>//     } else {</span>
+    <span class='comment'>//         panic!(&quot;Invalid Stats Response&quot;);</span>
+    <span class='comment'>//     }</span>
+    <span class='comment'>// }</span>
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>qos2_q_len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stats_req_tx</span>.<span class='ident'>send</span>(<span class='ident'>StatsReq</span>::<span class='ident'>QoS2QLen</span>));
-        <span class='kw'>let</span> <span class='ident'>o</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stats_resp_rx</span>.<span class='ident'>recv</span>());
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>StatsResp</span>::<span class='ident'>QoS2QLen</span>(<span class='ident'>r</span>) <span class='op'>=</span> <span class='ident'>o</span> {
-            <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>r</span>);
-        } <span class='kw'>else</span> {
-            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid Stats Response&quot;</span>);
-        }
-    }
+    <span class='comment'>// pub fn qos2_q_len(&amp;self) -&gt; Result&lt;usize&gt; {</span>
+    <span class='comment'>//     try!(self.stats_req_tx.send(StatsReq::QoS2QLen));</span>
+    <span class='comment'>//     let o = try!(self.stats_resp_rx.recv());</span>
+    <span class='comment'>//     if let StatsResp::QoS2QLen(r) = o {</span>
+    <span class='comment'>//         return Ok(r);</span>
+    <span class='comment'>//     } else {</span>
+    <span class='comment'>//         panic!(&quot;Invalid Stats Response&quot;);</span>
+    <span class='comment'>//     }</span>
+    <span class='comment'>// }</span>
 }
 </pre>
 </section>

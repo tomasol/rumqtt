@@ -254,11 +254,22 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::{<span class='ident'>Path</span>, <span class='ident'>PathBuf</span>};
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>QualityOfService</span>;
 
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MqttOptions</span> {
     <span class='kw'>pub</span> <span class='ident'>addr</span>: <span class='ident'>String</span>, <span class='comment'>// TODO: Use a default localhost here instead of option</span>
     <span class='kw'>pub</span> <span class='ident'>keep_alive</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u16</span><span class='op'>&gt;</span>,
@@ -275,6 +286,7 @@
     <span class='comment'>// wait time for ack beyond which packet(publish/subscribe) will be resent</span>
     <span class='kw'>pub</span> <span class='ident'>queue_timeout</span>: <span class='ident'>u16</span>,
     <span class='kw'>pub</span> <span class='ident'>ca</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>verify_ca</span>: <span class='ident'>bool</span>,
     <span class='kw'>pub</span> <span class='ident'>client_cert</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>PathBuf</span>, <span class='ident'>PathBuf</span>)<span class='op'>&gt;</span>,
 }
 
@@ -295,6 +307,7 @@
             <span class='ident'>sub_q_len</span>: <span class='number'>5</span>,
             <span class='ident'>queue_timeout</span>: <span class='number'>60</span>,
             <span class='ident'>ca</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>verify_ca</span>: <span class='bool-val'>true</span>,
             <span class='ident'>client_cert</span>: <span class='prelude-val'>None</span>,
         }
     }
@@ -431,6 +444,13 @@
         <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span>
     {
         <span class='self'>self</span>.<span class='ident'>ca</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>cafile</span>.<span class='ident'>as_ref</span>().<span class='ident'>to_path_buf</span>());
+        <span class='self'>self</span>
+    }
+
+    <span class='doccomment'>/// Set flag to determine whether or not to verify server CA during TLS connection</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_should_verify_ca</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>should_verify_ca</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+    {
+        <span class='self'>self</span>.<span class='ident'>verify_ca</span> <span class='op'>=</span> <span class='ident'>should_verify_ca</span>;
         <span class='self'>self</span>
     }
 

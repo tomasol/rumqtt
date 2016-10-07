@@ -113,21 +113,34 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::{<span class='self'>self</span>, <span class='ident'>RecvError</span>, <span class='ident'>TryRecvError</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::<span class='ident'>TcpStream</span>;
 
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>timer</span>::<span class='ident'>TimerError</span>;
 <span class='kw'>use</span> <span class='ident'>mio</span>::<span class='ident'>channel</span>::<span class='ident'>SendError</span>;
-<span class='kw'>use</span> <span class='ident'>openssl</span>::<span class='ident'>ssl</span>;
+<span class='kw'>use</span> <span class='ident'>openssl</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_name</span>::<span class='ident'>TopicNameError</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>topic_filter</span>::<span class='ident'>TopicFilterError</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>packet</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>mqtt</span>::<span class='ident'>control</span>::<span class='ident'>variable_header</span>::<span class='ident'>ConnectReturnCode</span>;
 
 
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>SslError</span> <span class='op'>=</span> <span class='ident'>ssl</span>::<span class='ident'>error</span>::<span class='ident'>SslError</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>SslError</span> <span class='op'>=</span> <span class='ident'>openssl</span>::<span class='ident'>error</span>::<span class='ident'>ErrorStack</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>HandShakeError</span> <span class='op'>=</span> <span class='ident'>openssl</span>::<span class='ident'>ssl</span>::<span class='ident'>HandshakeError</span><span class='op'>&lt;</span><span class='ident'>TcpStream</span><span class='op'>&gt;</span>;
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>result</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
@@ -144,6 +157,11 @@
     <span class='ident'>NoReconnectTry</span>,
     <span class='ident'>MqttPacket</span>,
     <span class='ident'>Ssl</span>(<span class='ident'>SslError</span>),
+    <span class='ident'>Timeout</span>,
+    <span class='ident'>InvalidPacket</span>,
+    <span class='ident'>InvalidState</span>,
+    <span class='ident'>HandshakeFailed</span>,
+    <span class='ident'>Handshake</span>(<span class='ident'>HandShakeError</span>),
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
@@ -180,6 +198,10 @@
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>SslError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>e</span>: <span class='ident'>SslError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>Ssl</span>(<span class='ident'>e</span>) }
+}
+
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>HandShakeError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>e</span>: <span class='ident'>HandShakeError</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> { <span class='ident'>Error</span>::<span class='ident'>Handshake</span>(<span class='ident'>e</span>) }
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>TimerError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {

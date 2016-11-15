@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-338' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#6-24' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-321' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#6-24' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MqttOptions {
     pub addr: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
     pub keep_alive: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;,
@@ -65,24 +65,56 @@
     pub ca: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>&gt;,
     pub verify_ca: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     pub client_cert: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;,
-}</pre><h2 class='fields'>Fields</h2><span id='structfield.addr' class='structfield'><code>addr: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code>
-                           </span><span class='stab '></span><span id='structfield.keep_alive' class='structfield'><code>keep_alive: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.clean_session' class='structfield'><code>clean_session: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
-                           </span><span class='stab '></span><span id='structfield.client_id' class='structfield'><code>client_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.username' class='structfield'><code>username: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.password' class='structfield'><code>password: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.reconnect' class='structfield'><code>reconnect: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.will' class='structfield'><code>will: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.will_qos' class='structfield'><code>will_qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a></code>
-                           </span><span class='stab '></span><span id='structfield.will_retain' class='structfield'><code>will_retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
-                           </span><span class='stab '></span><span id='structfield.pub_q_len' class='structfield'><code>pub_q_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
-                           </span><span class='stab '></span><span id='structfield.sub_q_len' class='structfield'><code>sub_q_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
-                           </span><span class='stab '></span><span id='structfield.queue_timeout' class='structfield'><code>queue_timeout: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
-                           </span><span class='stab '></span><span id='structfield.ca' class='structfield'><code>ca: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>&gt;</code>
-                           </span><span class='stab '></span><span id='structfield.verify_ca' class='structfield'><code>verify_ca: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
-                           </span><span class='stab '></span><span id='structfield.client_cert' class='structfield'><code>client_cert: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code>
-                           </span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-357' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#50-222' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></h4>
+}</pre><h2 class='fields'>Fields</h2><span id='structfield.addr' class='structfield'>
+                           <span id='addr.v' class='invisible'>
+                           <code>addr: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.keep_alive' class='structfield'>
+                           <span id='keep_alive.v' class='invisible'>
+                           <code>keep_alive: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.clean_session' class='structfield'>
+                           <span id='clean_session.v' class='invisible'>
+                           <code>clean_session: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.client_id' class='structfield'>
+                           <span id='client_id.v' class='invisible'>
+                           <code>client_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.username' class='structfield'>
+                           <span id='username.v' class='invisible'>
+                           <code>username: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.password' class='structfield'>
+                           <span id='password.v' class='invisible'>
+                           <code>password: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.reconnect' class='structfield'>
+                           <span id='reconnect.v' class='invisible'>
+                           <code>reconnect: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.will' class='structfield'>
+                           <span id='will.v' class='invisible'>
+                           <code>will: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.will_qos' class='structfield'>
+                           <span id='will_qos.v' class='invisible'>
+                           <code>will_qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.will_retain' class='structfield'>
+                           <span id='will_retain.v' class='invisible'>
+                           <code>will_retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.pub_q_len' class='structfield'>
+                           <span id='pub_q_len.v' class='invisible'>
+                           <code>pub_q_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.sub_q_len' class='structfield'>
+                           <span id='sub_q_len.v' class='invisible'>
+                           <code>sub_q_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.queue_timeout' class='structfield'>
+                           <span id='queue_timeout.v' class='invisible'>
+                           <code>queue_timeout: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.ca' class='structfield'>
+                           <span id='ca.v' class='invisible'>
+                           <code>ca: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>&gt;</code>
+                           </span></span><span class='stab '></span><span id='structfield.verify_ca' class='structfield'>
+                           <span id='verify_ca.v' class='invisible'>
+                           <code>verify_ca: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.client_cert' class='structfield'>
+                           <span id='client_cert.v' class='invisible'>
+                           <code>client_cert: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code>
+                           </span></span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-359' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#50-222' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span></h4>
 <div class='docblock'><p>Creates a new <code>MqttOptions</code> object which is used to set connection
 options for new client. Below are defaults with which this object is
 created.</p>
@@ -106,7 +138,7 @@ created.</p>
 </tr>
 <tr>
 <td><strong>keep_alive</strong></td>
-<td>5 secs</td>
+<td>10 secs</td>
 </tr>
 <tr>
 <td><strong>reconnect try</strong></td>
@@ -126,13 +158,13 @@ created.</p>
 </tr>
 </tbody>
 </table>
-</div><h4 id='method.set_keep_alive' class='method'><code>fn <a href='#method.set_keep_alive' class='fnname'>set_keep_alive</a>(self, secs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_keep_alive' class='method'><span id='set_keep_alive.v' class='invisible'><code>fn <a href='#method.set_keep_alive' class='fnname'>set_keep_alive</a>(self, secs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Number of seconds after which client should ping the broker
 if there is no other data exchange</p>
-</div><h4 id='method.set_client_id' class='method'><code>fn <a href='#method.set_client_id' class='fnname'>set_client_id</a>(self, client_id: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_client_id' class='method'><span id='set_client_id.v' class='invisible'><code>fn <a href='#method.set_client_id' class='fnname'>set_client_id</a>(self, client_id: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Client id of the client. A random client id will be selected
 if you don&#39;t set one</p>
-</div><h4 id='method.set_clean_session' class='method'><code>fn <a href='#method.set_clean_session' class='fnname'>set_clean_session</a>(self, clean_session: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_clean_session' class='method'><span id='set_clean_session.v' class='invisible'><code>fn <a href='#method.set_clean_session' class='fnname'>set_clean_session</a>(self, clean_session: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p><code>clean_session = true</code> instructs the broker to clean all the client
 state when it disconnects. Note that it is broker which is discarding
 the client state. But this client will hold its queues and attemts to
@@ -144,13 +176,13 @@ happens.</p>
 
 <p>Hence <strong>make sure that you manually set <code>client_id</code> when
 <code>clean_session</code> is false</strong></p>
-</div><h4 id='method.set_user_name' class='method'><code>fn <a href='#method.set_user_name' class='fnname'>set_user_name</a>(self, username: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_user_name' class='method'><span id='set_user_name.v' class='invisible'><code>fn <a href='#method.set_user_name' class='fnname'>set_user_name</a>(self, username: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Set <code>username</code> for broker to perform client authentication
 via <code>username</code> and <code>password</code></p>
-</div><h4 id='method.set_password' class='method'><code>fn <a href='#method.set_password' class='fnname'>set_password</a>(self, password: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_password' class='method'><span id='set_password.v' class='invisible'><code>fn <a href='#method.set_password' class='fnname'>set_password</a>(self, password: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Set <code>password</code> for broker to perform client authentication
 vis <code>username</code> and <code>password</code></p>
-</div><h4 id='method.set_pub_q_len' class='method'><code>fn <a href='#method.set_pub_q_len' class='fnname'>set_pub_q_len</a>(self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_pub_q_len' class='method'><span id='set_pub_q_len.v' class='invisible'><code>fn <a href='#method.set_pub_q_len' class='fnname'>set_pub_q_len</a>(self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>All the <code>QoS &gt; 0</code> publishes state will be saved to attempt
 retransmits incase ack from broker fails.</p>
 
@@ -163,27 +195,28 @@ allowed to infinitely push to the queue.</p>
 can push with out blocking. Messages in this queue will published as
 soon as
 connection is reestablished and <code>Publisher</code> gets unblocked</p>
-</div><h4 id='method.set_sub_q_len' class='method'><code>fn <a href='#method.set_sub_q_len' class='fnname'>set_sub_q_len</a>(self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></h4>
-<h4 id='method.set_q_timeout' class='method'><code>fn <a href='#method.set_q_timeout' class='fnname'>set_q_timeout</a>(self, secs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></h4>
-<h4 id='method.set_reconnect' class='method'><code>fn <a href='#method.set_reconnect' class='fnname'>set_reconnect</a>(self, dur: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_sub_q_len' class='method'><span id='set_sub_q_len.v' class='invisible'><code>fn <a href='#method.set_sub_q_len' class='fnname'>set_sub_q_len</a>(self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></span></h4>
+<h4 id='method.set_q_timeout' class='method'><span id='set_q_timeout.v' class='invisible'><code>fn <a href='#method.set_q_timeout' class='fnname'>set_q_timeout</a>(self, secs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></span></h4>
+<h4 id='method.set_reconnect' class='method'><span id='set_reconnect.v' class='invisible'><code>fn <a href='#method.set_reconnect' class='fnname'>set_reconnect</a>(self, dur: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Time interval after which client should retry for new
 connection if there are any disconnections.
 By default, no retry will happen</p>
-</div><h4 id='method.set_will' class='method'><code>fn <a href='#method.set_will' class='fnname'>set_will</a>(self, will_topic: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, will_message: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_will' class='method'><span id='set_will.v' class='invisible'><code>fn <a href='#method.set_will' class='fnname'>set_will</a>(self, will_topic: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, will_message: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Set will for the client so that broker can send <code>will_message</code>
 on <code>will_topic</code> when this client ungracefully dies.</p>
-</div><h4 id='method.set_will_qos' class='method'><code>fn <a href='#method.set_will_qos' class='fnname'>set_will_qos</a>(self, qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_will_qos' class='method'><span id='set_will_qos.v' class='invisible'><code>fn <a href='#method.set_will_qos' class='fnname'>set_will_qos</a>(self, qos: <a class='enum' href='../rumqtt/enum.QoS.html' title='rumqtt::QoS'>QualityOfService</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Set QoS for the will message</p>
-</div><h4 id='method.set_will_retain' class='method'><code>fn <a href='#method.set_will_retain' class='fnname'>set_will_retain</a>(self, retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
+</div><h4 id='method.set_will_retain' class='method'><span id='set_will_retain.v' class='invisible'><code>fn <a href='#method.set_will_retain' class='fnname'>set_will_retain</a>(self, retain: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Set will retian so that future clients subscribing to will topic
 knows of client&#39;s death.</p>
-</div><h4 id='method.set_ca' class='method'><code>fn <a href='#method.set_ca' class='fnname'>set_ca</a>&lt;P&gt;(self, cafile: P) -&gt; Self <span class='where'>where P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;</span></code></h4>
+</div><h4 id='method.set_ca' class='method'><span id='set_ca.v' class='invisible'><code>fn <a href='#method.set_ca' class='fnname'>set_ca</a>&lt;P&gt;(self, cafile: P) -&gt; Self <span class='where'>where P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;</span></code></span></h4>
 <div class='docblock'><p>Set CA file for server authentication during TLS connection</p>
-</div><h4 id='method.set_should_verify_ca' class='method'><code>fn <a href='#method.set_should_verify_ca' class='fnname'>set_should_verify_ca</a>(self, should_verify_ca: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
-<div class='docblock'><p>Set flag to determine whether or not to verify server CA during TLS connection</p>
-</div><h4 id='method.set_client_cert' class='method'><code>fn <a href='#method.set_client_cert' class='fnname'>set_client_cert</a>&lt;P&gt;(self, certfile: P, keyfile: P) -&gt; Self <span class='where'>where P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;</span></code></h4>
+</div><h4 id='method.set_should_verify_ca' class='method'><span id='set_should_verify_ca.v' class='invisible'><code>fn <a href='#method.set_should_verify_ca' class='fnname'>set_should_verify_ca</a>(self, should_verify_ca: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Set flag to determine whether or not to verify server CA during TLS
+connection</p>
+</div><h4 id='method.set_client_cert' class='method'><span id='set_client_cert.v' class='invisible'><code>fn <a href='#method.set_client_cert' class='fnname'>set_client_cert</a>&lt;P&gt;(self, certfile: P, keyfile: P) -&gt; Self <span class='where'>where P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;</span></code></span></h4>
 <div class='docblock'><p>Set client cert and key for server to do client authentication</p>
-</div><h4 id='method.broker' class='method'><code>fn <a href='#method.broker' class='fnname'>broker</a>(self, addr: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+</div><h4 id='method.broker' class='method'><span id='broker.v' class='invisible'><code>fn <a href='#method.broker' class='fnname'>broker</a>(self, addr: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Creates a new mqtt client with the broker address that you want
 to connect to. Along with connection details, this object holds
 all the state information of a connection.</p>
@@ -196,14 +229,14 @@ chaining</p>
                           .<span class='ident'>set_reconnect</span>(<span class='number'>5</span>)
                           .<span class='ident'>set_client_id</span>(<span class='string'>&quot;my-client-id&quot;</span>)
                           .<span class='ident'>set_clean_session</span>(<span class='bool-val'>true</span>)
-                          .<span class='ident'>connect</span>(<span class='string'>&quot;localhost:1883&quot;</span>);</pre>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-319' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#5' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></h4>
+                          .<span class='ident'>connect</span>(<span class='string'>&quot;localhost:1883&quot;</span>);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-338' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#5' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span></h4>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
-</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+</div><h4 id='method.clone_from' class='method'><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-355' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#26-47' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></h4>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../rumqtt/struct.MqttOptions.html' title='rumqtt::MqttOptions'>MqttOptions</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-357' class='srclink' href='../src/rumqtt/src/clientoptions.rs.html#26-47' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class='method'><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></span></h4>
 <div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
 </div></div></section>
     <section id='search' class="content hidden"></section>

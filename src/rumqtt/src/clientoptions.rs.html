@@ -294,7 +294,7 @@
     <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>MqttOptions</span> {
             <span class='ident'>addr</span>: <span class='string'>&quot;localhost:1883&quot;</span>.<span class='ident'>to_string</span>(),
-            <span class='ident'>keep_alive</span>: <span class='prelude-val'>Some</span>(<span class='number'>5</span>),
+            <span class='ident'>keep_alive</span>: <span class='prelude-val'>Some</span>(<span class='number'>10</span>),
             <span class='ident'>clean_session</span>: <span class='bool-val'>true</span>,
             <span class='ident'>client_id</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>username</span>: <span class='prelude-val'>None</span>,
@@ -323,7 +323,7 @@
     <span class='doccomment'>/// |-------------------------|--------------------------|</span>
     <span class='doccomment'>/// | **client_id**           | Randomly generated       |</span>
     <span class='doccomment'>/// | **clean_session**       | true                     |</span>
-    <span class='doccomment'>/// | **keep_alive**          | 5 secs                   |</span>
+    <span class='doccomment'>/// | **keep_alive**          | 10 secs                   |</span>
     <span class='doccomment'>/// | **reconnect try**       | Doesn&#39;t try to reconnect |</span>
     <span class='doccomment'>/// | **retransmit try time** | 60 secs                  |</span>
     <span class='doccomment'>/// | **pub_q_len**           | 50                       |</span>
@@ -447,9 +447,9 @@
         <span class='self'>self</span>
     }
 
-    <span class='doccomment'>/// Set flag to determine whether or not to verify server CA during TLS connection</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_should_verify_ca</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>should_verify_ca</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
-    {
+    <span class='doccomment'>/// Set flag to determine whether or not to verify server CA during TLS</span>
+    <span class='doccomment'>/// connection</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_should_verify_ca</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>should_verify_ca</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='self'>self</span>.<span class='ident'>verify_ca</span> <span class='op'>=</span> <span class='ident'>should_verify_ca</span>;
         <span class='self'>self</span>
     }

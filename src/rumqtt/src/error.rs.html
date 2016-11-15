@@ -124,6 +124,7 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
+<span id="83">83</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
@@ -157,7 +158,8 @@
     <span class='ident'>NoReconnectTry</span>,
     <span class='ident'>MqttPacket</span>,
     <span class='ident'>Ssl</span>(<span class='ident'>SslError</span>),
-    <span class='ident'>Timeout</span>,
+    <span class='ident'>PingTimeout</span>,
+    <span class='ident'>AwaitPingResp</span>,
     <span class='ident'>InvalidPacket</span>,
     <span class='ident'>InvalidState</span>,
     <span class='ident'>HandshakeFailed</span>,

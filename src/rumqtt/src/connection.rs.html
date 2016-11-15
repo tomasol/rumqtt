@@ -805,6 +805,27 @@
 <span id="761">761</span>
 <span id="762">762</span>
 <span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>TcpStream</span>, <span class='ident'>SocketAddr</span>, <span class='ident'>Shutdown</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::<span class='ident'>Receiver</span>;
@@ -833,7 +854,6 @@
 <span class='kw'>static</span> <span class='kw-2'>mut</span> <span class='ident'>N</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='number'>0</span>;
 
 <span class='kw'>enum</span> <span class='ident'>HandlePacket</span> {
-
     <span class='ident'>Publish</span>(<span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>),
     <span class='ident'>PubAck</span>(<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>),
     <span class='ident'>PubRec</span>(<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Message</span><span class='op'>&gt;</span>),
@@ -879,6 +899,7 @@
     <span class='kw'>pub</span> <span class='ident'>nw_notification_tx</span>: <span class='ident'>SyncSender</span><span class='op'>&lt;</span><span class='ident'>NetworkNotification</span><span class='op'>&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>state</span>: <span class='ident'>MqttState</span>,
     <span class='kw'>pub</span> <span class='ident'>initial_connect</span>: <span class='ident'>bool</span>,
+    <span class='kw'>pub</span> <span class='ident'>await_pingresp</span>: <span class='ident'>bool</span>,
     <span class='kw'>pub</span> <span class='ident'>last_flush</span>: <span class='ident'>Instant</span>,
 
     <span class='doccomment'>/// On message callback</span>
@@ -925,6 +946,7 @@
             <span class='ident'>nw_notification_tx</span>: <span class='ident'>nw_notification_tx</span>,
             <span class='ident'>state</span>: <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>,
             <span class='ident'>initial_connect</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>await_pingresp</span>: <span class='bool-val'>false</span>,
             <span class='ident'>last_flush</span>: <span class='ident'>Instant</span>::<span class='ident'>now</span>(),
 
             <span class='ident'>publish_callback</span>: <span class='ident'>publish_callback</span>,
@@ -975,7 +997,9 @@
                             <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>set_read_timeout</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>1</span>, <span class='number'>0</span>))));
                             <span class='kw'>break</span>;
                         }
-                        <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> {
+                        <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
+                            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Couldn&#39;t connect. Error = {:?}&quot;</span>, <span class='ident'>e</span>);
+                            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;  Will try Reconnect in {:?} seconds&quot;</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>reconnect</span>);
                             <span class='kw'>continue</span>;
                         }
                     }
@@ -993,10 +1017,13 @@
                                     <span class='kw'>match</span> <span class='ident'>err</span>.<span class='ident'>kind</span>() {
                                         <span class='ident'>ErrorKind</span>::<span class='ident'>TimedOut</span> <span class='op'>|</span> <span class='ident'>ErrorKind</span>::<span class='ident'>WouldBlock</span> <span class='op'>=&gt;</span> {
                                             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>write</span>();
+
+                                            <span class='comment'>// TODO: Test if PINGRESPs are properly recieved before</span>
+                                            <span class='comment'>// next ping incase of high frequency incoming messages</span>
                                             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ping</span>() {
                                                 <span class='kw'>match</span> <span class='ident'>e</span> {
-                                                    <span class='ident'>Error</span>::<span class='ident'>Timeout</span> <span class='op'>=&gt;</span> {
-                                                        <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Couldn&#39;t PING in time :( . Err = {:?}&quot;</span>, <span class='ident'>e</span>);
+                                                    <span class='ident'>Error</span>::<span class='ident'>PingTimeout</span> <span class='op'>|</span> <span class='ident'>Error</span>::<span class='ident'>AwaitPingResp</span> <span class='op'>=&gt;</span> {
+                                                        <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Can&#39;t Ping :( . Err = {:?}&quot;</span>, <span class='ident'>e</span>);
                                                         <span class='self'>self</span>.<span class='ident'>_unbind</span>();
                                                         <span class='kw'>continue</span> <span class='lifetime'>&#39;reconnect</span>;
                                                     }
@@ -1011,9 +1038,8 @@
                                         }
                                         _ <span class='op'>=&gt;</span> {
                                             <span class='comment'>// Socket error are readily available here as soon as</span>
-                                            <span class='comment'>// disconnection happens. So it might be right for this</span>
-                                            <span class='comment'>// thread to ask for reconnection rather than reconnecting</span>
-                                            <span class='comment'>// during write failures</span>
+                                            <span class='comment'>// broker closes its socket end. (But not inbetween n/w disconnection</span>
+                                            <span class='comment'>// and socket close at broker [i.e ping req timeout])</span>
                                             <span class='comment'>// UPDATE: Lot of publishes are being written by the time this notified</span>
                                             <span class='comment'>// the eventloop thread. Setting disconnect_block = true during write failure</span>
                                             <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Error in receiving packet {:?}&quot;</span>, <span class='ident'>err</span>);
@@ -1050,8 +1076,19 @@
                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
                     <span class='kw'>let</span> <span class='ident'>elapsed</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_flush</span>.<span class='ident'>elapsed</span>();
                     <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>new</span>((<span class='ident'>keep_alive</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>) {
-                        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Timeout</span>);
+                        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>PingTimeout</span>);
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>from_millis</span>(((<span class='ident'>keep_alive</span> <span class='op'>*</span> <span class='number'>1000</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>*</span> <span class='number'>0.9</span>) <span class='kw'>as</span> <span class='ident'>u64</span>) {
+                        <span class='comment'>// @ Prevents half open connections. Tcp writes will buffer up</span>
+                        <span class='comment'>// with out throwing any error (till a timeout) when internet</span>
+                        <span class='comment'>// is down. Eventhough broker closes the socket, EOF will be</span>
+                        <span class='comment'>// known only after reconnection.</span>
+                        <span class='comment'>// We just unbind the socket if there in no pingresp before next ping</span>
+                        <span class='comment'>// (TODO: What about case when pings aren&#39;t sent because of constant publishes</span>
+                        <span class='comment'>// ?)</span>
+                        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>await_pingresp</span> {
+                            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>AwaitPingResp</span>);
+                        }
+
                         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_ping</span>());
                     }
                 }
@@ -1087,10 +1124,9 @@
     <span class='kw'>fn</span> <span class='ident'>_try_reconnect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>reconnect</span> {
             <span class='comment'>// TODO: Implement</span>
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;To be implemented&quot;</span>),
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>(),
             <span class='prelude-val'>Some</span>(<span class='ident'>dur</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>initial_connect</span> {
-                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;  Will try Reconnect in {} seconds&quot;</span>, <span class='ident'>dur</span>);
                     <span class='ident'>thread</span>::<span class='ident'>sleep</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='ident'>dur</span> <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>));
                 }
                 <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>TcpStream</span>::<span class='ident'>connect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>addr</span>));
@@ -1229,7 +1265,10 @@
                 <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>packet</span> {
                     <span class='ident'>VariablePacket</span>::<span class='ident'>SubackPacket</span>(..) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>SubAck</span>),
 
-                    <span class='ident'>VariablePacket</span>::<span class='ident'>PingrespPacket</span>(..) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PingResp</span>),
+                    <span class='ident'>VariablePacket</span>::<span class='ident'>PingrespPacket</span>(..) <span class='op'>=&gt;</span> {
+                        <span class='self'>self</span>.<span class='ident'>await_pingresp</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
+                        <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PingResp</span>)
+                    }
 
                     <span class='ident'>VariablePacket</span>::<span class='ident'>DisconnectPacket</span>(..) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>Disconnect</span>),
 
@@ -1284,7 +1323,8 @@
                         <span class='comment'>// After receiving PUBREC packet and removing corrosponding</span>
                         <span class='comment'>// message from outgoing_rec queue, send PUBREL and add it queue.</span>
                         <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>)));
-                        <span class='comment'>// NOTE: Don&#39;t Error return here. It&#39;s ok to fail during writes coz of disconnection.</span>
+                        <span class='comment'>// NOTE: Don&#39;t Error return here. It&#39;s ok to fail during writes coz of</span>
+                        <span class='comment'>// disconnection.</span>
                         <span class='comment'>// `force_transmit` will resend when reconnection is successful</span>
                         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_pubrel</span>(<span class='ident'>pkid</span>);
                         <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>m</span>))
@@ -1521,9 +1561,10 @@
 
     <span class='kw'>fn</span> <span class='ident'>_ping</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>ping</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>genpack</span>::<span class='ident'>generate_pingreq_packet</span>());
-        <span class='comment'>// self.await_ping = true;</span>
+        <span class='self'>self</span>.<span class='ident'>await_pingresp</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>ping</span>));
-        <span class='self'>self</span>.<span class='ident'>_flush</span>()
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_flush</span>());
+        <span class='prelude-val'>Ok</span>(())
     }
 
     <span class='kw'>fn</span> <span class='ident'>_puback</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pkid</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
@@ -1552,8 +1593,9 @@
 
     <span class='kw'>fn</span> <span class='ident'>_unbind</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>shutdown</span>(<span class='ident'>Shutdown</span>::<span class='ident'>Both</span>);
+        <span class='self'>self</span>.<span class='ident'>await_pingresp</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
         <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
-        <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;  Disconnected {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>);
+        <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;  Disconnected {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>

@@ -184,9 +184,9 @@
             <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>ctx</span>.<span class='ident'>set_private_key_file</span>(<span class='ident'>key</span>, <span class='ident'>X509FileType</span>::<span class='ident'>PEM</span>));
         }
         <span class='kw'>if</span> <span class='ident'>should_verify_ca</span> {
-          <span class='ident'>ctx</span>.<span class='ident'>set_verify</span>(<span class='ident'>SSL_VERIFY_PEER</span>);
+            <span class='ident'>ctx</span>.<span class='ident'>set_verify</span>(<span class='ident'>SSL_VERIFY_PEER</span>);
         } <span class='kw'>else</span> {
-          <span class='ident'>ctx</span>.<span class='ident'>set_verify</span>(<span class='ident'>SSL_VERIFY_NONE</span>);
+            <span class='ident'>ctx</span>.<span class='ident'>set_verify</span>(<span class='ident'>SSL_VERIFY_NONE</span>);
         }
         <span class='prelude-val'>Ok</span>(<span class='ident'>SslContext</span> { <span class='ident'>inner</span>: <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>ctx</span>) })
     }

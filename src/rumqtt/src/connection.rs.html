@@ -826,6 +826,32 @@
 <span id="782">782</span>
 <span id="783">783</span>
 <span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>TcpStream</span>, <span class='ident'>SocketAddr</span>, <span class='ident'>Shutdown</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::<span class='ident'>Receiver</span>;
@@ -847,7 +873,7 @@
 
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='prelude-ty'>Result</span>, <span class='ident'>Error</span>};
 <span class='kw'>use</span> <span class='ident'>clientoptions</span>::<span class='ident'>MqttOptions</span>;
-<span class='kw'>use</span> <span class='ident'>tls</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>SslContext</span>};
+<span class='kw'>use</span> <span class='ident'>stream</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>SslContext</span>};
 <span class='kw'>use</span> <span class='ident'>genpack</span>;
 <span class='kw'>use</span> <span class='ident'>message</span>::<span class='ident'>Message</span>;
 
@@ -973,8 +999,10 @@
         <span class='ident'>connection</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span>;
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>connection</span>.<span class='ident'>_await_connack</span>());
         <span class='ident'>connection</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span>;
+        <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;$$$ Connected to broker&quot;</span>);
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>connection</span>.<span class='ident'>nw_notification_tx</span>.<span class='ident'>send</span>(<span class='ident'>NetworkNotification</span>::<span class='ident'>Connected</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>connection</span>.<span class='ident'>stream</span>.<span class='ident'>set_read_timeout</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>1</span>, <span class='number'>0</span>))));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>connection</span>.<span class='ident'>stream</span>.<span class='ident'>set_write_timeout</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>10</span>, <span class='number'>0</span>))));
         <span class='prelude-val'>Ok</span>(<span class='ident'>connection</span>)
     }
 
@@ -992,6 +1020,7 @@
                             <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Handshake</span>;
                             <span class='kw'>let</span> <span class='ident'>packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_await_connack</span>());
                             <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span>;
+                            <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;$$$ Connected to broker&quot;</span>);
                             <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>post_connack_handle</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>));
                             <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>nw_notification_tx</span>.<span class='ident'>send</span>(<span class='ident'>NetworkNotification</span>::<span class='ident'>Connected</span>));
                             <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>set_read_timeout</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Duration</span>::<span class='ident'>new</span>(<span class='number'>1</span>, <span class='number'>0</span>))));
@@ -1015,7 +1044,16 @@
                             <span class='ident'>VariablePacketError</span>::<span class='ident'>FixedHeaderError</span>(<span class='ident'>err</span>) <span class='op'>=&gt;</span> {
                                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>FixedHeaderError</span>::<span class='ident'>IoError</span>(<span class='ident'>err</span>) <span class='op'>=</span> <span class='ident'>err</span> {
                                     <span class='kw'>match</span> <span class='ident'>err</span>.<span class='ident'>kind</span>() {
+                                        <span class='comment'>// Timedout for Windows, WouldBlock for linux</span>
                                         <span class='ident'>ErrorKind</span>::<span class='ident'>TimedOut</span> <span class='op'>|</span> <span class='ident'>ErrorKind</span>::<span class='ident'>WouldBlock</span> <span class='op'>=&gt;</span> {
+                                            <span class='comment'>// During timeout write errors when tcp write</span>
+                                            <span class='comment'>// buffers are full, ping below will error out because of</span>
+                                            <span class='comment'>// PingTimeout when (n * write timeout) &gt; ping timeout</span>
+
+                                            <span class='comment'>// NOTE: Force pings during Write timeout/ Queue overflow is</span>
+                                            <span class='comment'>// bad because unlike idle state, publishes might be continous</span>
+                                            <span class='comment'>// and connection might not go into read mod for detecting</span>
+                                            <span class='comment'>// pingreps before consequent publishes</span>
                                             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>write</span>();
 
                                             <span class='comment'>// TODO: Test if PINGRESPs are properly recieved before</span>
@@ -1061,6 +1099,7 @@
                         }
                     }
                 };
+
                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>post_handle_packet</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>) {
                     <span class='kw'>continue</span> <span class='lifetime'>&#39;receive</span>;
                 }
@@ -1075,16 +1114,20 @@
             <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> <span class='op'>=&gt;</span> {
                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>keep_alive</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>keep_alive</span> {
                     <span class='kw'>let</span> <span class='ident'>elapsed</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_flush</span>.<span class='ident'>elapsed</span>();
-                    <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>new</span>((<span class='ident'>keep_alive</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>) {
-                        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>PingTimeout</span>);
-                    } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>from_millis</span>(((<span class='ident'>keep_alive</span> <span class='op'>*</span> <span class='number'>1000</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>*</span> <span class='number'>0.9</span>) <span class='kw'>as</span> <span class='ident'>u64</span>) {
+
+                    <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>from_millis</span>(((<span class='ident'>keep_alive</span> <span class='op'>*</span> <span class='number'>1000</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>*</span> <span class='number'>0.9</span>) <span class='kw'>as</span> <span class='ident'>u64</span>) {
+                        <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&gt;=</span> <span class='ident'>Duration</span>::<span class='ident'>new</span>((<span class='ident'>keep_alive</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='number'>0</span>) {
+                            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>PingTimeout</span>);
+                        }
+
                         <span class='comment'>// @ Prevents half open connections. Tcp writes will buffer up</span>
                         <span class='comment'>// with out throwing any error (till a timeout) when internet</span>
                         <span class='comment'>// is down. Eventhough broker closes the socket, EOF will be</span>
                         <span class='comment'>// known only after reconnection.</span>
                         <span class='comment'>// We just unbind the socket if there in no pingresp before next ping</span>
-                        <span class='comment'>// (TODO: What about case when pings aren&#39;t sent because of constant publishes</span>
-                        <span class='comment'>// ?)</span>
+                        <span class='comment'>// (What about case when pings aren&#39;t sent because of constant publishes</span>
+                        <span class='comment'>// ?. A. Tcp write buffer gets filled up and write will be blocked for 10</span>
+                        <span class='comment'>// secs and then error out because of timeout.)</span>
                         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>await_pingresp</span> {
                             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>AwaitPingResp</span>);
                         }
@@ -1190,13 +1233,17 @@
                 <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>packet</span> {
                     <span class='ident'>VariablePacket</span>::<span class='ident'>ConnackPacket</span>(..) <span class='op'>=&gt;</span> {
                         <span class='self'>self</span>.<span class='ident'>no_of_reconnections</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                        <span class='comment'>// Resubscribe after a reconnection.</span>
-                        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
-                            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_subscribe</span>(<span class='ident'>s</span>);
+                        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span> {
+                            <span class='comment'>// Resubscribe after a reconnection when connected with clean session.</span>
+                            <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>subscriptions</span>.<span class='ident'>clone</span>() {
+                                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_subscribe</span>(<span class='ident'>s</span>);
+                            }
                         }
-                        <span class='comment'>// Retransmit QoS1,2 queues after reconnection. Clears the queue by the time</span>
-                        <span class='comment'>// QoS*Reconnect notifications are sent to read pending messages in the channel</span>
-                        <span class='self'>self</span>.<span class='ident'>_force_retransmit</span>();
+
+                        <span class='comment'>// Retransmit QoS1,2 queues after reconnection when clean_session = false</span>
+                        <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span> {
+                            <span class='self'>self</span>.<span class='ident'>_force_retransmit</span>();
+                        }
                         <span class='prelude-val'>Ok</span>(())
                     }
                     _ <span class='op'>=&gt;</span> {
@@ -1222,14 +1269,6 @@
                 }
             }
             <span class='ident'>HandlePacket</span>::<span class='ident'>PubAck</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> {
-                <span class='comment'>// Don&#39;t notify everytime q len is &lt; max. This will always be true initially</span>
-                <span class='comment'>// leading to dup notify.</span>
-                <span class='comment'>// Send only for notify() to recover if channel is blocked.</span>
-                <span class='comment'>// Blocking = true is set during publish if pub q len is more than desired.</span>
-                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>*</span> <span class='number'>50</span> {
-                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;:( :( Outgoing Publish Queue Length growing bad --&gt; {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>());
-                }
-
                 <span class='kw'>if</span> <span class='ident'>m</span>.<span class='ident'>is_none</span>() {
                     <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
                 }
@@ -1241,10 +1280,6 @@
             }
             <span class='comment'>// TODO: Better read from channel again after PubComp instead of PubRec</span>
             <span class='ident'>HandlePacket</span>::<span class='ident'>PubRec</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> {
-                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>*</span> <span class='number'>50</span> {
-                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;:( :( Outgoing Publish Queue Length growing bad&quot;</span>);
-                }
-
                 <span class='kw'>if</span> <span class='ident'>m</span>.<span class='ident'>is_none</span>() {
                     <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
                 }
@@ -1273,8 +1308,8 @@
                     <span class='ident'>VariablePacket</span>::<span class='ident'>DisconnectPacket</span>(..) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>HandlePacket</span>::<span class='ident'>Disconnect</span>),
 
                     <span class='ident'>VariablePacket</span>::<span class='ident'>PubackPacket</span>(<span class='kw-2'>ref</span> <span class='ident'>puback</span>) <span class='op'>=&gt;</span> {
-                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;*** puback --&gt; {:?}\n @@@ queue --&gt; {:?}\n\n&quot;</span>, <span class='ident'>puback</span>, <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>);
                         <span class='kw'>let</span> <span class='ident'>pkid</span> <span class='op'>=</span> <span class='ident'>puback</span>.<span class='ident'>packet_identifier</span>();
+                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;*** PubAck --&gt; Pkid({:?})\n--- Publish Queue =\n{:#?}\n\n&quot;</span>, <span class='ident'>pkid</span>, <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>);
                         <span class='kw'>let</span> <span class='ident'>m</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>
                             .<span class='ident'>iter</span>()
                             .<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>1</span>.<span class='ident'>get_pkid</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='ident'>pkid</span>)) {
@@ -1304,6 +1339,7 @@
                     <span class='comment'>// @ Send &#39;pubrel&#39; to broker</span>
                     <span class='ident'>VariablePacket</span>::<span class='ident'>PubrecPacket</span>(<span class='kw-2'>ref</span> <span class='ident'>pubrec</span>) <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> <span class='ident'>pkid</span> <span class='op'>=</span> <span class='ident'>pubrec</span>.<span class='ident'>packet_identifier</span>();
+                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;*** PubRec --&gt; Pkid({:?})\n--- Record Queue =\n{:#?}\n\n&quot;</span>, <span class='ident'>pkid</span>, <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>);
                         <span class='kw'>let</span> <span class='ident'>m</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>
                             .<span class='ident'>iter</span>()
                             .<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>1</span>.<span class='ident'>get_pkid</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='ident'>pkid</span>)) {
@@ -1342,6 +1378,8 @@
                             .<span class='ident'>position</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>get_pkid</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='ident'>pkid</span>)) {
                             <span class='prelude-val'>Some</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> {
                                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>incoming_rec</span>.<span class='ident'>remove</span>(<span class='ident'>i</span>) {
+                                    <span class='self'>self</span>.<span class='ident'>outgoing_comp</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>)));
+                                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_pubcomp</span>(<span class='ident'>pkid</span>);
                                     <span class='prelude-val'>Some</span>(<span class='ident'>message</span>)
                                 } <span class='kw'>else</span> {
                                     <span class='prelude-val'>None</span>
@@ -1458,44 +1496,35 @@
         <span class='prelude-val'>Ok</span>(())
     }
 
-    <span class='comment'>// Spec says that client (for QoS &gt; 0, clean session) should retransmit all the</span>
-    <span class='comment'>// unacked messages after reconnection. Instead of waiting for retransmit</span>
-    <span class='comment'>// timeout</span>
-    <span class='comment'>// to kickin, this methods retransmits everthing in the queue immediately</span>
-    <span class='comment'>// NOTE: outgoing_rels are handled in _try_retransmit. Sending duplicate pubrels</span>
-    <span class='comment'>// isn&#39;t a problem (I guess ?). Broker will just resend pubcomps</span>
+    <span class='comment'>// Spec says that client (for QoS &gt; 0, persistant session [clean session = 0])</span>
+    <span class='comment'>// should retransmit all the unacked publishes and pubrels after reconnection.</span>
+    <span class='comment'>// NOTE: Sending duplicate pubrels isn&#39;t a problem (I guess ?). Broker will</span>
+    <span class='comment'>// just resend pubcomps</span>
     <span class='kw'>fn</span> <span class='ident'>_force_retransmit</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span> {
-            <span class='comment'>// Cloning because iterating and removing isn&#39;t possible.</span>
-            <span class='comment'>// Iterating over indexes and and removing elements messes</span>
-            <span class='comment'>// up the remove sequence</span>
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_pub</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>clone</span>();
-            <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>clear</span>();
-            <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=</span> <span class='ident'>outgoing_pub</span>.<span class='ident'>pop_front</span>() {
-                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
-            }
+        <span class='comment'>// Cloning because iterating and removing isn&#39;t possible.</span>
+        <span class='comment'>// Iterating over indexes and and removing elements messes</span>
+        <span class='comment'>// up the remove sequence</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_pub</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>clone</span>();
+        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;*** Force Retransmission. Publish Queue =\n{:#?}\n\n&quot;</span>, <span class='ident'>outgoing_pub</span>);
+        <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>clear</span>();
+        <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=</span> <span class='ident'>outgoing_pub</span>.<span class='ident'>pop_front</span>() {
+            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
+        }
 
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_rec</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>clone</span>();
-            <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>clear</span>();
-            <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=</span> <span class='ident'>outgoing_rec</span>.<span class='ident'>pop_front</span>() {
-                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
-            }
-
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_rel</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>clone</span>();
-            <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>clear</span>();
-            <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>rel</span>) <span class='op'>=</span> <span class='ident'>outgoing_rel</span>.<span class='ident'>pop_front</span>() {
-                <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>rel</span>.<span class='number'>1</span>));
-                <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='ident'>rel</span>.<span class='number'>1</span>;
-                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_pubrel</span>(<span class='ident'>pkid</span>);
-            }
-
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_comp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_comp</span>.<span class='ident'>clone</span>();
-            <span class='self'>self</span>.<span class='ident'>outgoing_comp</span>.<span class='ident'>clear</span>();
-            <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>comp</span>) <span class='op'>=</span> <span class='ident'>outgoing_comp</span>.<span class='ident'>pop_front</span>() {
-                <span class='self'>self</span>.<span class='ident'>outgoing_comp</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>comp</span>.<span class='number'>1</span>));
-                <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='ident'>comp</span>.<span class='number'>1</span>;
-                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_pubcomp</span>(<span class='ident'>pkid</span>);
-            }
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_rec</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>clone</span>();
+        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;*** Force Retransmission. Record Queue =\n{:#?}\n\n&quot;</span>, <span class='ident'>outgoing_rec</span>);
+        <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>clear</span>();
+        <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=</span> <span class='ident'>outgoing_rec</span>.<span class='ident'>pop_front</span>() {
+            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_publish</span>(<span class='op'>*</span><span class='ident'>message</span>.<span class='number'>1</span>);
+        }
+        <span class='comment'>// println!(&quot;{:?}&quot;, self.outgoing_rec.iter().map(|e|</span>
+        <span class='comment'>// e.1.qos).collect::&lt;Vec&lt;_&gt;&gt;());</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>outgoing_rel</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>clone</span>();
+        <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>clear</span>();
+        <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>rel</span>) <span class='op'>=</span> <span class='ident'>outgoing_rel</span>.<span class='ident'>pop_front</span>() {
+            <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>rel</span>.<span class='number'>1</span>));
+            <span class='kw'>let</span> <span class='ident'>PacketIdentifier</span>(<span class='ident'>pkid</span>) <span class='op'>=</span> <span class='ident'>rel</span>.<span class='number'>1</span>;
+            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>_pubrel</span>(<span class='ident'>pkid</span>);
         }
     }
 
@@ -1535,9 +1564,17 @@
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level0</span> <span class='op'>=&gt;</span> (),
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level1</span>(_) <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
+
+                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>*</span> <span class='number'>50</span> {
+                    <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;:( :( Outgoing Publish Queue Length growing bad --&gt; {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>len</span>());
+                }
             }
             <span class='ident'>QoSWithPacketIdentifier</span>::<span class='ident'>Level2</span>(_) <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>push_back</span>((<span class='ident'>time</span>::<span class='ident'>get_time</span>().<span class='ident'>sec</span>, <span class='ident'>message_box</span>.<span class='ident'>clone</span>()));
+
+                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>pub_q_len</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>*</span> <span class='number'>50</span> {
+                    <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;:( :( Outgoing Record Queue Length growing bad --&gt; {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>len</span>());
+                }
             }
         }
         <span class='comment'>// error!(&quot;Queue --&gt; {:?}\n\n&quot;, self.outgoing_pub);</span>
@@ -1552,7 +1589,7 @@
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>==</span> <span class='ident'>MqttState</span>::<span class='ident'>Connected</span> {
                     <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>_write_packet</span>(<span class='ident'>publish_packet</span>));
                 } <span class='kw'>else</span> {
-                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;State = {:?}. Skip network write&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
+                    <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;State = {:?}. Skip network write&quot;</span>, <span class='self'>self</span>.<span class='ident'>state</span>);
                 }
             }
         };
@@ -1595,9 +1632,24 @@
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>shutdown</span>(<span class='ident'>Shutdown</span>::<span class='ident'>Both</span>);
         <span class='self'>self</span>.<span class='ident'>await_pingresp</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
         <span class='self'>self</span>.<span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>MqttState</span>::<span class='ident'>Disconnected</span>;
+
+        <span class='comment'>// remove all the state</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>clean_session</span> {
+            <span class='self'>self</span>.<span class='ident'>outgoing_pub</span>.<span class='ident'>clear</span>();
+            <span class='self'>self</span>.<span class='ident'>outgoing_rec</span>.<span class='ident'>clear</span>();
+            <span class='self'>self</span>.<span class='ident'>outgoing_rel</span>.<span class='ident'>clear</span>();
+            <span class='self'>self</span>.<span class='ident'>outgoing_comp</span>.<span class='ident'>clear</span>();
+        }
+
         <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;  Disconnected {:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>opts</span>.<span class='ident'>client_id</span>);
     }
 
+    <span class='comment'>// NOTE: write_all() will block indefinitely by default if</span>
+    <span class='comment'>// underlying Tcp Buffer is full (during disconnections). This</span>
+    <span class='comment'>// is evident when test cases are publishing lot of data when</span>
+    <span class='comment'>// ethernet cable is unplugged (mantests/half_open_publishes_and_reconnections</span>
+    <span class='comment'>// but not during mantests/ping_reqs_in_time_and_reconnections due to low</span>
+    <span class='comment'>// frequency writes. 10 seconds migth be good default for write timeout ?)</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>_write_packet</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>packet</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>write_all</span>(<span class='kw-2'>&amp;</span><span class='ident'>packet</span>));

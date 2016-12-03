@@ -67,7 +67,7 @@ issue/pullrequest.</p>
                                   .<span class='ident'>set_keep_alive</span>(<span class='number'>5</span>)
                                   .<span class='ident'>set_reconnect</span>(<span class='number'>3</span>)
                                   .<span class='ident'>set_client_id</span>(<span class='string'>&quot;rumqtt-docs&quot;</span>)
-                                  .<span class='ident'>broker</span>(<span class='string'>&quot;localhost:1883&quot;</span>);
+                                  .<span class='ident'>broker</span>(<span class='string'>&quot;test.mosquitto.org:1883&quot;</span>);
 
 <span class='comment'>// Create a new `MqttClient` object from `MqttOptions`</span>
 <span class='kw'>let</span> <span class='ident'>mq_client</span> <span class='op'>=</span> <span class='ident'>MqttClient</span>::<span class='ident'>new</span>(<span class='ident'>client_options</span>);

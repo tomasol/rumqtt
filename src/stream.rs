@@ -7,6 +7,7 @@ use std::time::Duration;
 
 use openssl::ssl::{self, SslMethod, SSL_VERIFY_NONE, SSL_VERIFY_PEER};
 use openssl::x509::X509FileType;
+use mqtt3::{Packet, MqttWrite};
 
 pub type SslStream = ssl::SslStream<TcpStream>;
 
@@ -82,6 +83,14 @@ impl NetworkStream {
             NetworkStream::Tcp(ref s) => s.set_write_timeout(dur),
             NetworkStream::Tls(ref s) => s.get_ref().set_write_timeout(dur),
             NetworkStream::None => Err(io::Error::new(io::ErrorKind::Other, "No stream!")),
+        }
+    }
+
+    pub fn write_packet(&mut self, packet: &Packet) -> Result<()> {
+        match *self {
+            NetworkStream::Tcp(ref mut s) => Ok(s.write_packet(packet)?),
+            NetworkStream::Tls(ref mut s) => Ok(s.get_mut().write_packet(packet)?),
+            NetworkStream::None => Err(io::Error::new(io::ErrorKind::Other, "No stream!").into()),
         }
     }
 }

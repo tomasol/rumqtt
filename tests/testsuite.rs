@@ -61,9 +61,7 @@ fn basic_publishes_and_subscribes() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let counter_cb = move |_| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let counter_cb = move |_| { count.fetch_add(1, Ordering::SeqCst); };
 
     let msg_callback = MqttCallback::new().on_message(counter_cb);
 
@@ -221,9 +219,7 @@ fn retained_messages() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_message(cb);
 
@@ -273,9 +269,7 @@ fn qos0_stress_publish() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_message(cb);
 
@@ -311,9 +305,7 @@ fn simple_qos1_stress_publish() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_publish(cb);
 
@@ -350,9 +342,7 @@ fn qos1_stress_publish_with_reconnections() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_publish(cb);
 
@@ -383,9 +373,7 @@ fn simple_qos2_stress_publish() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_publish(cb);
 
@@ -415,9 +403,7 @@ fn qos2_stress_publish_with_reconnections() {
     let final_count = count.clone();
     let count = count.clone();
 
-    let cb = move |m: Message| {
-        count.fetch_add(1, Ordering::SeqCst);
-    };
+    let cb = move |m: Message| { count.fetch_add(1, Ordering::SeqCst); };
 
     let callback = MqttCallback::new().on_publish(cb);
 

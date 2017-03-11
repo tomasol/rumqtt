@@ -3,11 +3,9 @@ use std::io;
 use std::sync::mpsc::{TryRecvError, TrySendError, SendError};
 use std::net::TcpStream;
 
+use mqtt3;
+
 use openssl;
-use mqtt::topic_name::TopicNameError;
-use mqtt::topic_filter::TopicFilterError;
-use mqtt::packet::*;
-use mqtt::control::variable_header::ConnectReturnCode;
 use connection::NetworkRequest;
 
 pub type SslError = openssl::error::ErrorStack;
@@ -32,17 +30,13 @@ quick_error! {
         Send(err: SendError<NetworkRequest>) {
             from()
         }
-        TopicName(err: TopicNameError) {
-            from()
-        }
-        TopicFilter(err: TopicFilterError) {
+        Mqtt3(err: mqtt3::Error) {
             from()
         }
         ConnectionAbort
         HandshakeFailed
         InvalidState
         InvalidPacket
-        Packet
         MqttPacket
         PingTimeout
         AwaitPingResp
@@ -52,10 +46,5 @@ quick_error! {
         Handshake(e: HandShakeError) {
             from()
         }
-        ConnectionRefused(e: ConnectReturnCode)
     }
-}
-
-impl<'a, P: Packet<'a>> From<PacketError<'a, P>> for Error {
-    fn from(_: PacketError<'a, P>) -> Error { Error::MqttPacket }
 }

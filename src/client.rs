@@ -4,12 +4,9 @@ use std::sync::Arc;
 use std::thread;
 use std::sync::mpsc::{sync_channel, SyncSender};
 
-use mqtt::{QualityOfService, TopicFilter};
-use mqtt::packet::*;
-use mqtt::topic_name::TopicName;
+use mqtt3::{QoS, TopicPath, Message};
 
 use error::{Result, Error};
-use message::Message;
 use clientoptions::MqttOptions;
 use connection::{Connection, NetworkRequest};
 use callbacks::MqttCallback;
@@ -32,37 +29,7 @@ impl MqttClient {
         unreachable!("Cannot lookup address");
     }
 
-    /// Connects to the broker and starts an event loop in a new thread.
-    /// Returns 'Request' and handles reqests from it.
-    /// Also handles network events, reconnections and retransmissions.
-    pub fn start(opts: MqttOptions, callbacks: Option<MqttCallback>) -> Result<Self> {
-        let (nw_request_tx, nw_request_rx) = sync_channel::<NetworkRequest>(50);
-        let addr = Self::lookup_ipv4(opts.addr.as_str());
-        let mut connection = Connection::connect(addr, opts.clone(), nw_request_rx, callbacks)?;
-        // This thread handles network reads (coz they are blocking) and
-        // and sends them to event loop thread to handle mqtt state.
-        thread::spawn(move || -> Result<()> {
-            let _ = connection.run();
-            error!("Network Thread Stopped !!!!!!!!!");
-            Ok(())
-        });
-
-        let client = MqttClient { nw_request_tx: nw_request_tx };
-
-        Ok(client)
-    }
-
-    pub fn subscribe(&mut self, topics: Vec<(&str, QualityOfService)>) -> Result<()> {
-        let mut sub_topics = Vec::with_capacity(topics.len());
-        for topic in topics {
-            let topic = (TopicFilter::new_checked(topic.0)?, topic.1);
-            sub_topics.push(topic);
-        }
-        self.nw_request_tx.send(NetworkRequest::Subscribe(sub_topics))?;
-        Ok(())
-    }
-
-    pub fn publish(&mut self, topic: &str, qos: QualityOfService, payload: Vec<u8>) -> Result<()> {
+    pub fn publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>) -> Result<()> {
         let payload = Arc::new(payload);
         let mut ret_val;
         loop {
@@ -85,12 +52,12 @@ impl MqttClient {
         ret_val
     }
 
-    pub fn retained_publish(&mut self, topic: &str, qos: QualityOfService, payload: Vec<u8>) -> Result<()> {
+    pub fn retained_publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>) -> Result<()> {
         let payload = Arc::new(payload);
         self._publish(topic, true, qos, payload, None)
     }
 
-    pub fn userdata_publish(&mut self, topic: &str, qos: QualityOfService, payload: Vec<u8>, userdata: Vec<u8>) -> Result<()> {
+    pub fn userdata_publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>, userdata: Vec<u8>) -> Result<()> {
         let payload = Arc::new(payload);
         let userdata = Arc::new(userdata);
         let mut ret_val;
@@ -114,12 +81,7 @@ impl MqttClient {
         ret_val
     }
 
-    pub fn retained_userdata_publish(&mut self,
-                                     topic: &str,
-                                     qos: QualityOfService,
-                                     payload: Vec<u8>,
-                                     userdata: Vec<u8>)
-                                     -> Result<()> {
+    pub fn retained_userdata_publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>, userdata: Vec<u8>) -> Result<()> {
         let payload = Arc::new(payload);
         let userdata = Arc::new(userdata);
         self._publish(topic, true, qos, payload, Some(userdata))
@@ -138,31 +100,27 @@ impl MqttClient {
     fn _publish(&mut self,
                 topic: &str,
                 retain: bool,
-                qos: QualityOfService,
+                qos: QoS,
                 payload: Arc<Vec<u8>>,
                 userdata: Option<Arc<Vec<u8>>>)
                 -> Result<()> {
 
-        let topic = TopicName::new(topic.to_string())?;
-        let qos_pkid = match qos {
-            QualityOfService::Level0 => QoSWithPacketIdentifier::Level0,
-            QualityOfService::Level1 => QoSWithPacketIdentifier::Level1(0),
-            QualityOfService::Level2 => QoSWithPacketIdentifier::Level2(0),
-        };
+        let topic = TopicPath::from_str(topic.to_string())?;
 
         let message = Message {
             topic: topic,
             retain: retain,
-            qos: qos_pkid,
+            qos: qos,
             payload: payload,
-            userdata: userdata,
+            pid: None,
         };
+        let message = Box::new(message);
 
         // TODO: Check message sanity here and return error if not
         match qos {
-            QualityOfService::Level0 |
-            QualityOfService::Level1 |
-            QualityOfService::Level2 => self.nw_request_tx.try_send(NetworkRequest::Publish(message))?,
+            QoS::AtMostOnce | QoS::AtLeastOnce | QoS::ExactlyOnce => {
+                self.nw_request_tx.try_send(NetworkRequest::Publish(message))?
+            }
         };
 
         Ok(())
@@ -175,7 +133,7 @@ impl MqttClient {
 mod test {
     extern crate env_logger;
 
-    use mqtt::QualityOfService as QoS;
+    use mqtt3::QoS;
     use clientoptions::MqttOptions;
     use super::MqttClient;
     use error::Result;

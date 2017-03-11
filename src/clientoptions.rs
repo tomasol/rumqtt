@@ -1,6 +1,6 @@
 use rand::{self, Rng};
 use std::path::{Path, PathBuf};
-use mqtt::QualityOfService;
+use mqtt3::QoS;
 
 #[derive(Clone)]
 pub struct MqttOptions {
@@ -12,7 +12,7 @@ pub struct MqttOptions {
     pub password: Option<String>,
     pub reconnect: u16,
     pub will: Option<(String, String)>,
-    pub will_qos: QualityOfService,
+    pub will_qos: QoS,
     pub will_retain: bool,
     pub pub_q_len: u16,
     pub sub_q_len: u16,
@@ -21,7 +21,7 @@ pub struct MqttOptions {
     pub ca: Option<PathBuf>,
     pub verify_ca: bool,
     pub client_cert: Option<(PathBuf, PathBuf)>,
-    pub storepack_sz: usize
+    pub storepack_sz: usize,
 }
 
 impl Default for MqttOptions {
@@ -35,7 +35,7 @@ impl Default for MqttOptions {
             password: None,
             reconnect: 5,
             will: None,
-            will_qos: QualityOfService::Level0,
+            will_qos: QoS::AtMostOnce,
             will_retain: false,
             pub_q_len: 50,
             sub_q_len: 5,
@@ -43,7 +43,7 @@ impl Default for MqttOptions {
             ca: None,
             verify_ca: true,
             client_cert: None,
-            storepack_sz: 100*1024
+            storepack_sz: 100 * 1024,
         }
     }
 }
@@ -82,7 +82,7 @@ impl MqttOptions {
 
     /// Size limit for packet persistance in queues (in KB's)
     pub fn set_storepack_sz(mut self, sz: usize) -> Self {
-        self.storepack_sz = sz*1024;
+        self.storepack_sz = sz * 1024;
         self
     }
 
@@ -167,7 +167,7 @@ impl MqttOptions {
     }
 
     /// Set QoS for the will message
-    pub fn set_will_qos(mut self, qos: QualityOfService) -> Self {
+    pub fn set_will_qos(mut self, qos: QoS) -> Self {
         self.will_qos = qos;
         self
     }

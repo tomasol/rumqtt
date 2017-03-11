@@ -69,15 +69,13 @@ extern crate rand;
 extern crate log;
 #[macro_use]
 extern crate quick_error;
-extern crate mqtt;
+extern crate mqtt3;
 extern crate time;
 extern crate openssl;
 extern crate threadpool;
 
 mod error;
-mod genpack;
 mod stream;
-mod message;
 mod clientoptions;
 mod connection;
 mod client;
@@ -85,7 +83,6 @@ mod callbacks;
 
 pub use error::{Error, Result};
 pub use clientoptions::MqttOptions;
-pub use mqtt::QualityOfService as QoS;
+pub use mqtt3::QoS;
 pub use client::MqttClient;
-pub use message::Message;
 pub use callbacks::MqttCallback;

@@ -29,6 +29,27 @@ impl MqttClient {
         unreachable!("Cannot lookup address");
     }
 
+    /// Connects to the broker and starts an event loop in a new thread.
+    /// Returns 'Request' and handles reqests from it.
+    /// Also handles network events, reconnections and retransmissions.
+    pub fn start(opts: MqttOptions, callbacks: Option<MqttCallback>) -> Result<Self> {
+        let (nw_request_tx, nw_request_rx) = sync_channel::<NetworkRequest>(50);
+        let addr = Self::lookup_ipv4(opts.addr.as_str());
+        let mut connection = Connection::connect(addr, opts.clone(), nw_request_rx, callbacks)?;
+
+        // This thread handles network reads (coz they are blocking) and
+        // and sends them to event loop thread to handle mqtt state.
+        thread::spawn(move || -> Result<()> {
+            let _ = connection.run();
+            error!("Network Thread Stopped !!!!!!!!!");
+            Ok(())
+        });
+
+        let client = MqttClient { nw_request_tx: nw_request_tx };
+
+        Ok(client)
+    }
+
     pub fn publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>) -> Result<()> {
         let payload = Arc::new(payload);
         let mut ret_val;

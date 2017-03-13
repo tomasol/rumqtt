@@ -3,7 +3,7 @@ use std::io;
 use std::sync::mpsc::{TryRecvError, TrySendError, SendError};
 use std::net::TcpStream;
 
-use mqtt3;
+use mqtt3::{self, ConnectReturnCode};
 
 use openssl;
 use connection::NetworkRequest;
@@ -40,10 +40,14 @@ quick_error! {
         MqttPacket
         PingTimeout
         AwaitPingResp
+        Reconnect
         Ssl(e: SslError) {
             from()
         }
         Handshake(e: HandShakeError) {
+            from()
+        }
+        MqttConnectionRefused(e: ConnectReturnCode) {
             from()
         }
     }

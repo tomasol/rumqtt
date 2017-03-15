@@ -4,7 +4,7 @@ use std::sync::Arc;
 use std::thread;
 use std::sync::mpsc::{sync_channel, SyncSender};
 
-use mqtt3::{QoS, TopicPath, Message, Topic};
+use mqtt3::{QoS, TopicPath, Message};
 
 use error::{Result, Error};
 use clientoptions::MqttOptions;

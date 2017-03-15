@@ -94,41 +94,37 @@ impl Connection {
         // before mqtt connection
         connection.try_reconnect()?;
         connection.read_incoming()?;
-
         Ok(connection)
     }
 
     pub fn run(&mut self) -> Result<()> {
-        'reconnect: loop {
-            if !self.initial_connect {
-                match self.try_reconnect() {
-                    Ok(_) => {
-                        self.stream.set_read_timeout(Some(Duration::new(1, 0)))?;
-                        self.stream.set_write_timeout(Some(Duration::new(10, 0)))?;
+        loop {
+            'receive: loop {
+                if let Err(e) = self.read_incoming() {
+                    match e {
+                        Error::PingTimeout | Error::Reconnect => break 'receive,
+                        Error::MqttConnectionRefused(_) => {
+                            if self.initial_connect {
+                                return Err(e);
+                            } else {
+                                break 'receive;
+                            }
+                        }
+                        _ => continue 'receive,
                     }
+                }
+            }
+
+            'reconnect: loop {
+                match self.try_reconnect() {
+                    Ok(_) => break 'reconnect,
                     Err(e) => {
                         error!("Couldn't connect. Error = {:?}", e);
                         if self.initial_connect {
                             return Err(e);
                         } else {
-                            continue;
+                            continue 'reconnect;
                         }
-                    }
-                }
-            }
-
-            'receive: loop {
-                if let Err(e) = self.read_incoming() {
-                    match e {
-                        Error::PingTimeout | Error::Reconnect => continue 'reconnect,
-                        Error::MqttConnectionRefused(_) => {
-                            if self.initial_connect {
-                                return Err(e);
-                            } else {
-                                continue 'reconnect;
-                            }
-                        }
-                        _ => break,
                     }
                 }
             }
@@ -145,7 +141,8 @@ impl Connection {
         }
 
         let stream = TcpStream::connect(&self.addr)?;
-        let stream = match self.opts.ca {
+
+        let mut stream = match self.opts.ca {
             Some(ref ca) => {
                 if let Some((ref crt, ref key)) = self.opts.client_cert {
                     let ssl_ctx: SslContext = SslContext::new(ca, Some((crt, key)), self.opts.verify_ca)?;
@@ -157,6 +154,9 @@ impl Connection {
             }
             None => NetworkStream::Tcp(stream),
         };
+
+        stream.set_read_timeout(Some(Duration::new(1, 0)))?;
+        stream.set_write_timeout(Some(Duration::new(10, 0)))?;
 
         self.stream = stream;
         let connect = self.generate_connect_packet();
@@ -220,7 +220,7 @@ impl Connection {
                     NetworkRequest::Disconnect => self.disconnect()?,
                     NetworkRequest::Publish(m) => self.publish(m)?,
                     NetworkRequest::Subscribe(s) => {
-                        println!("@@@@@@@@@@@");
+                        self.subscriptions.push_back(s.clone());
                         self.subscribe(s)?
                     }
                 };
@@ -315,6 +315,13 @@ impl Connection {
         }
 
         self.state = MqttState::Connected;
+
+        if self.opts.clean_session {
+            // Resubscribe after a reconnection when connected with clean session.
+            for s in self.subscriptions.clone() {
+                let _ = self.subscribe(s);
+            }
+        }
 
         // Retransmit QoS1,2 queues after reconnection when clean_session = false
         if !self.opts.clean_session {
@@ -421,7 +428,6 @@ impl Connection {
 
     // TODO: Maintain subscribe pkid queue and check ack status
     fn subscribe(&mut self, topics: Vec<(String, QoS)>) -> Result<()> {
-        println!("{:?}", topics);
         let pkid = self.next_pkid();
         let topics = topics.iter()
             .map(|t| {
@@ -538,5 +544,67 @@ impl Connection {
             username: self.opts.username.clone(),
             password: self.opts.password.clone(),
         })
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::{Connection, MqttState};
+    use clientoptions::MqttOptions;
+    use mqtt3::PacketIdentifier;
+
+    use std::net::{SocketAddr, ToSocketAddrs};
+    use std::collections::VecDeque;
+    use std::time::Instant;
+    use std::sync::mpsc::sync_channel;
+
+    use threadpool::ThreadPool;
+    use stream::NetworkStream;
+
+    pub fn mock_connect() -> Connection {
+        fn lookup_ipv4<A: ToSocketAddrs>(addr: A) -> SocketAddr {
+            let addrs = addr.to_socket_addrs().expect("Conversion Failed");
+            for addr in addrs {
+                if let SocketAddr::V4(_) = addr {
+                    return addr;
+                }
+            }
+            unreachable!("Cannot lookup address");
+        }
+
+        let addr = lookup_ipv4("test.mosquitto.org:1883");
+        let (_, rx) = sync_channel(10);
+        let opts = MqttOptions::new();
+        let conn = Connection {
+            addr: addr,
+            opts: opts,
+            stream: NetworkStream::None,
+            nw_request_rx: rx,
+            state: MqttState::Disconnected,
+            initial_connect: true,
+            await_pingresp: false,
+            last_flush: Instant::now(),
+            last_pkid: PacketIdentifier(0),
+            callback: None,
+            // Queues
+            outgoing_pub: VecDeque::new(),
+            // Subscriptions
+            subscriptions: VecDeque::new(),
+            no_of_reconnections: 0,
+            // Threadpool
+            pool: ThreadPool::new(1),
+        };
+        conn
+    }
+
+    #[test]
+    fn next_pkid_roll() {
+        let mut connection = mock_connect();
+        let mut pkt_id = PacketIdentifier(0);
+        for _ in 0..65536 {
+            pkt_id = connection.next_pkid();
+        }
+        assert_eq!(PacketIdentifier(1), pkt_id);
     }
 }

@@ -24,6 +24,7 @@ quick_error! {
         TrySend(err: TrySendError<NetworkRequest>) {
             from()
         }
+        NoConnectionThread
         TryRecv(err: TryRecvError) {
             from()
         }
@@ -37,6 +38,7 @@ quick_error! {
         HandshakeFailed
         InvalidState
         InvalidPacket
+        InvalidTopic(topic: String)
         MqttPacket
         PingTimeout
         AwaitPingResp

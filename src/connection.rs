@@ -11,18 +11,8 @@ use clientoptions::MqttOptions;
 use stream::{NetworkStream, SslContext};
 use callbacks::MqttCallback;
 
-use mqtt3::{self, Connect, Connack, ConnectReturnCode, Protocol, Message, PacketIdentifier, QoS, Packet};
+use mqtt3::{self, Connect, Connack, ConnectReturnCode, Protocol, Message, PacketIdentifier, QoS, Packet, SubscribeTopic, Subscribe};
 // static mut N: i32 = 0;
-
-enum HandlePacket {
-    Connack,
-    Publish(Box<Message>),
-    PubAck(Option<Message>),
-    SubAck,
-    PingResp,
-    Disconnect,
-    Invalid,
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MqttState {
@@ -34,6 +24,7 @@ pub enum MqttState {
 #[derive(Debug)]
 pub enum NetworkRequest {
     Publish(Box<Message>),
+    Subscribe(Vec<(String, QoS)>),
     Shutdown,
     Disconnect,
 }
@@ -57,6 +48,11 @@ pub struct Connection {
     /// For QoS 1. Stores outgoing publishes
     pub outgoing_pub: VecDeque<(Box<Message>)>,
 
+    // clean_session=false will remember subscriptions only till lives.
+    // If broker crashes, all its state will be lost (most brokers).
+    // client wouldn't want to loose messages after it comes back up again
+    pub subscriptions: VecDeque<Vec<(String, QoS)>>,
+
     // TODO: subscriptions remember
     pub no_of_reconnections: u32,
 
@@ -71,7 +67,7 @@ impl Connection {
                    callback: Option<MqttCallback>)
                    -> Result<Self> {
 
-        let connection = Connection {
+        let mut connection = Connection {
             addr: addr,
             opts: opts,
             stream: NetworkStream::None,
@@ -85,48 +81,59 @@ impl Connection {
             outgoing_pub: VecDeque::new(),
 
             callback: callback,
+            subscriptions: VecDeque::new(),
             no_of_reconnections: 0,
 
             // Threadpool
             pool: ThreadPool::new(1),
         };
 
+        // Make initial tcp connection, send connect packet and
+        // return if connack packet has errors. Doing this here
+        // ensures that user doesn't have access to this object
+        // before mqtt connection
+        connection.try_reconnect()?;
+        connection.read_incoming()?;
+
         Ok(connection)
     }
 
     pub fn run(&mut self) -> Result<()> {
         'reconnect: loop {
-            match self.try_reconnect() {
-                Ok(_) => {
-                    self.stream.set_read_timeout(Some(Duration::new(1, 0)))?;
-                    self.stream.set_write_timeout(Some(Duration::new(10, 0)))?;
-                }
-                Err(e) => {
-                    error!("Couldn't connect. Error = {:?}", e);
-                    if self.initial_connect {
-                        return Err(e);
-                    } else {
-                        continue;
+            if !self.initial_connect {
+                match self.try_reconnect() {
+                    Ok(_) => {
+                        self.stream.set_read_timeout(Some(Duration::new(1, 0)))?;
+                        self.stream.set_write_timeout(Some(Duration::new(10, 0)))?;
                     }
-                }
-            }
-
-            if let Err(e) = self.read_incoming() {
-                match e {
-                    Error::PingTimeout | Error::Reconnect => continue 'reconnect,
-                    Error::MqttConnectionRefused(_) => {
+                    Err(e) => {
+                        error!("Couldn't connect. Error = {:?}", e);
                         if self.initial_connect {
                             return Err(e);
                         } else {
-                            continue 'reconnect;
+                            continue;
                         }
                     }
-                    _ => break,
                 }
             }
-        }
 
-        Ok(())
+            'receive: loop {
+                if let Err(e) = self.read_incoming() {
+                    match e {
+                        Error::PingTimeout | Error::Reconnect => continue 'reconnect,
+                        Error::MqttConnectionRefused(_) => {
+                            if self.initial_connect {
+                                return Err(e);
+                            } else {
+                                continue 'reconnect;
+                            }
+                        }
+                        _ => break,
+                    }
+                }
+            }
+
+        }
     }
 
     /// Creates a Tcp Connection, Sends Mqtt connect packet and sets state to
@@ -160,46 +167,44 @@ impl Connection {
     }
 
     pub fn read_incoming(&mut self) -> Result<()> {
-        'receive: loop {
-            let packet = self.stream.read_packet();
+        let packet = self.stream.read_packet();
 
-            if let Ok(packet) = packet {
-                if let Err(Error::MqttConnectionRefused(e)) = self.handle_packet(packet) {
-                    return Err(Error::MqttConnectionRefused(e));
-                }
-            } else if let Err(Error::Mqtt3(mqtt3::Error::Io(e))) = packet {
-
-                match e.kind() {
-                    ErrorKind::TimedOut | ErrorKind::WouldBlock => {
-
-                        // TODO: Test if PINGRESPs are properly recieved before
-                        // next ping incase of high frequency incoming messages
-                        if let Err(e) = self.ping() {
-                            error!("PING error {:?}", e);
-                            self.unbind();
-                            return Err(Error::PingTimeout);
-                        }
-
-                        let _ = self.write();
-                        continue 'receive;
-                    }
-                    _ => {
-                        // Socket error are readily available here as soon as
-                        // broker closes its socket end. (But not inbetween n/w disconnection
-                        // and socket close at broker [i.e ping req timeout])
-
-                        // UPDATE: Lot of publishes are being written by the time this notified
-                        // the eventloop thread. Setting disconnect_block = true during write failure
-                        error!("At line = {:?}. Error in receiving packet. Error = {:?}", line!(), e);
-                        self.unbind();
-                        return Err(Error::Reconnect);
-                    }
-                }
+        if let Ok(packet) = packet {
+            if let Err(Error::MqttConnectionRefused(e)) = self.handle_packet(packet) {
+                Err(Error::MqttConnectionRefused(e))
             } else {
-                error!("At line = {:?}. Error in receiving packet. Error = {:?}", line!(), packet);
-                self.unbind();
-                return Err(Error::Reconnect);
+                Ok(())
             }
+        } else if let Err(Error::Mqtt3(mqtt3::Error::Io(e))) = packet {
+            match e.kind() {
+                ErrorKind::TimedOut | ErrorKind::WouldBlock => {
+                    // TODO: Test if PINGRESPs are properly recieved before
+                    // next ping incase of high frequency incoming messages
+                    if let Err(e) = self.ping() {
+                        error!("PING error {:?}", e);
+                        self.unbind();
+                        return Err(Error::PingTimeout);
+                    }
+
+                    let _ = self.write();
+                    Ok(())
+                }
+                _ => {
+                    // Socket error are readily available here as soon as
+                    // broker closes its socket end. (But not inbetween n/w disconnection
+                    // and socket close at broker [i.e ping req timeout])
+
+                    // UPDATE: Lot of publishes are being written by the time this notified
+                    // the eventloop thread. Setting disconnect_block = true during write failure
+                    error!("At line = {:?}. Error in receiving packet. Error = {:?}", line!(), e);
+                    self.unbind();
+                    Err(Error::Reconnect)
+                }
+            }
+        } else {
+            error!("At line = {:?}. Error in receiving packet. Error = {:?}", line!(), packet);
+            self.unbind();
+            Err(Error::Reconnect)
         }
     }
 
@@ -214,6 +219,10 @@ impl Connection {
                     NetworkRequest::Shutdown => self.stream.shutdown(Shutdown::Both)?,
                     NetworkRequest::Disconnect => self.disconnect()?,
                     NetworkRequest::Publish(m) => self.publish(m)?,
+                    NetworkRequest::Subscribe(s) => {
+                        println!("@@@@@@@@@@@");
+                        self.subscribe(s)?
+                    }
                 };
             }
         }
@@ -258,7 +267,7 @@ impl Connection {
         Ok(())
     }
 
-    fn handle_packet(&mut self, packet: Packet) -> Result<HandlePacket> {
+    fn handle_packet(&mut self, packet: Packet) -> Result<()> {
         match self.state {
             MqttState::Handshake => {
                 if let Packet::Connack(connack) = packet {
@@ -270,17 +279,17 @@ impl Connection {
             }
             MqttState::Connected => {
                 match packet {
-                    Packet::Suback(..) => Ok(HandlePacket::SubAck),
+                    Packet::Suback(..) => Ok(()),
                     Packet::Pingresp => {
                         self.await_pingresp = false;
-                        Ok(HandlePacket::PingResp)
+                        Ok(())
                     }
-                    Packet::Disconnect => Ok(HandlePacket::Disconnect),
+                    Packet::Disconnect => Ok(()),
                     Packet::Puback(puback) => self.handle_puback(puback),
                     Packet::Publish(publ) => self.handle_message(Message::from_pub(publ)?),
                     _ => {
                         error!("Invalid Packet in Connected State --> {:?}", packet);
-                        Ok(HandlePacket::Invalid)
+                        Ok(())
                     }
                 }
             }
@@ -293,7 +302,7 @@ impl Connection {
 
     ///  Checks Mqtt connack packet's status code and sets Mqtt state
     /// to `Connected` if successful
-    fn handle_connack(&mut self, connack: Connack) -> Result<HandlePacket> {
+    fn handle_connack(&mut self, connack: Connack) -> Result<()> {
         let code = connack.code;
 
         if code != ConnectReturnCode::Accepted {
@@ -306,24 +315,38 @@ impl Connection {
         }
 
         self.state = MqttState::Connected;
-        Ok(HandlePacket::Connack)
+
+        // Retransmit QoS1,2 queues after reconnection when clean_session = false
+        if !self.opts.clean_session {
+            self.force_retransmit();
+        }
+
+        Ok(())
     }
 
-    fn handle_message(&mut self, message: Box<Message>) -> Result<HandlePacket> {
+    fn handle_message(&mut self, message: Box<Message>) -> Result<()> {
         debug!("       Publish {:?} {:?} < {:?} bytes", message.qos, message.topic, message.payload.len());
 
         match message.qos {
-            QoS::AtMostOnce => Ok(HandlePacket::Publish(message)),
+            QoS::AtMostOnce => (),
             QoS::AtLeastOnce => {
                 let pkid = message.pid.unwrap();
                 self.puback(pkid)?;
-                Ok(HandlePacket::Publish(message))
             }
-            QoS::ExactlyOnce => Ok(HandlePacket::Publish(message)),
+            QoS::ExactlyOnce => (),
         }
+
+        if let Some(ref callback) = self.callback {
+            if let Some(ref on_message) = callback.on_message {
+                let on_message = on_message.clone();
+                self.pool.execute(move || on_message(*message));
+            }
+        }
+
+        Ok(())
     }
 
-    fn handle_puback(&mut self, pkid: PacketIdentifier) -> Result<HandlePacket> {
+    fn handle_puback(&mut self, pkid: PacketIdentifier) -> Result<()> {
         debug!("*** PubAck --> Pkid({:?})\n--- Publish Queue =\n{:#?}\n\n", pkid, self.outgoing_pub);
         let m = match self.outgoing_pub
             .iter()
@@ -340,8 +363,18 @@ impl Connection {
                 None
             }
         };
+
+        if let Some(val) = m {
+            if let Some(ref callback) = self.callback {
+                if let Some(ref on_publish) = callback.on_publish {
+                    let on_publish = on_publish.clone();
+                    self.pool.execute(move || on_publish(val));
+                }
+            }
+        }
+
         debug!("Pub Q Len After Ack @@@ {:?}", self.outgoing_pub.len());
-        Ok(HandlePacket::PubAck(m))
+        Ok(())
     }
 
     fn publish(&mut self, message: Box<Message>) -> Result<()> {
@@ -383,6 +416,28 @@ impl Connection {
         // error!("Queue --> {:?}\n\n", self.outgoing_pub);
         // debug!("       Publish {:?} {:?} > {} bytes", message.qos,
         // topic.clone().to_string(), message.payload.len());
+        Ok(())
+    }
+
+    // TODO: Maintain subscribe pkid queue and check ack status
+    fn subscribe(&mut self, topics: Vec<(String, QoS)>) -> Result<()> {
+        println!("{:?}", topics);
+        let pkid = self.next_pkid();
+        let topics = topics.iter()
+            .map(|t| {
+                SubscribeTopic {
+                    topic_path: t.0.clone(),
+                    qos: t.1,
+                }
+            })
+            .collect();
+
+        let subscribes = Subscribe {
+            pid: pkid,
+            topics: topics,
+        };
+        let subscribe_packet = Packet::Subscribe(Box::new(subscribes));
+        self.write_packet(subscribe_packet)?;
         Ok(())
     }
 

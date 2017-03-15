@@ -4,7 +4,7 @@ use std::sync::Arc;
 use std::thread;
 use std::sync::mpsc::{sync_channel, SyncSender};
 
-use mqtt3::{QoS, TopicPath, Message};
+use mqtt3::{QoS, TopicPath, Message, Topic};
 
 use error::{Result, Error};
 use clientoptions::MqttOptions;
@@ -59,7 +59,7 @@ impl MqttClient {
             if let Err(Error::TrySend(ref e)) = ret_val {
                 match e {
                     // break immediately if rx is dropped
-                    &TrySendError::Disconnected(_) => break,
+                    &TrySendError::Disconnected(_) => return Err(Error::NoConnectionThread),
                     &TrySendError::Full(_) => {
                         warn!("Request Queue Full !!!!!!!!");
                         thread::sleep(Duration::new(2, 0));
@@ -70,7 +70,6 @@ impl MqttClient {
                 return ret_val;
             }
         }
-        ret_val
     }
 
     pub fn retained_publish(&mut self, topic: &str, qos: QoS, payload: Vec<u8>) -> Result<()> {
@@ -106,6 +105,21 @@ impl MqttClient {
         let payload = Arc::new(payload);
         let userdata = Arc::new(userdata);
         self._publish(topic, true, qos, payload, Some(userdata))
+    }
+
+    pub fn subscribe(&mut self, topics: Vec<(&str, QoS)>) -> Result<()> {
+        // TODO: Too many loops. Optimize this & add validation
+        let topics = topics.iter()
+            .map(|t| (t.0.to_string(), t.1))
+            .collect();
+
+        // for (topic, _) in topics.iter() {
+        //     if !Topic::validate(&topic) {
+        //         return Err(Error::InvalidTopic(topic))
+        //     }
+        // }
+        self.nw_request_tx.send(NetworkRequest::Subscribe(topics))?;
+        Ok(())
     }
 
     pub fn disconnect(&self) -> Result<()> {
@@ -189,7 +203,7 @@ mod test {
         match mock_start(client_options, true) {
             Ok(mut mq_client) => {
                 for _ in 0..65536 {
-                    mq_client._publish("hello/world", false, QoS::Level1, Arc::new(vec![1u8, 2, 3]), None).unwrap();
+                    mq_client._publish("hello/world", false, QoS::AtLeastOnce, Arc::new(vec![1u8, 2, 3]), None).unwrap();
                 }
             }
             Err(e) => panic!("{:?}", e),
@@ -204,7 +218,7 @@ mod test {
         match mock_start(client_options, false) {
             Ok(mut mq_client) => {
                 for _ in 0..65536 {
-                    mq_client._publish("hello/world", false, QoS::Level1, Arc::new(vec![1u8, 2, 3]), None).unwrap();
+                    mq_client._publish("hello/world", false, QoS::AtLeastOnce, Arc::new(vec![1u8, 2, 3]), None).unwrap();
                 }
             }
             Err(e) => panic!("{:?}", e),

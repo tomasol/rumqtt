@@ -11,7 +11,7 @@ use clientoptions::MqttOptions;
 use stream::{NetworkStream, SslContext};
 use callbacks::MqttCallback;
 
-use mqtt3::{Connect, Connack, ConnectReturnCode, Protocol, Message, PacketIdentifier, QoS, Packet};
+use mqtt3::{self, Connect, Connack, ConnectReturnCode, Protocol, Message, PacketIdentifier, QoS, Packet};
 // static mut N: i32 = 0;
 
 enum HandlePacket {
@@ -167,7 +167,8 @@ impl Connection {
                 if let Err(Error::MqttConnectionRefused(e)) = self.handle_packet(packet) {
                     return Err(Error::MqttConnectionRefused(e));
                 }
-            } else if let Err(Error::Io(e)) = packet {
+            } else if let Err(Error::Mqtt3(mqtt3::Error::Io(e))) = packet {
+
                 match e.kind() {
                     ErrorKind::TimedOut | ErrorKind::WouldBlock => {
 
@@ -194,6 +195,10 @@ impl Connection {
                         return Err(Error::Reconnect);
                     }
                 }
+            } else {
+                error!("At line = {:?}. Error in receiving packet. Error = {:?}", line!(), packet);
+                self.unbind();
+                return Err(Error::Reconnect);
             }
         }
     }

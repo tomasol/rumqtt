@@ -121,34 +121,32 @@ fn simple_reconnection() {
     assert!(1 == final_count.load(Ordering::SeqCst));
 }
 
-// #[test]
-// fn acked_message() {
-//     let client_options = MqttOptions::new()
-//         .set_reconnect(5)
-//         .set_client_id("test-reconnect-client")
-//         .set_broker(MOSQUITTO_ADDR);
+#[test]
+fn acked_message() {
+    let client_options = MqttOptions::new()
+        .set_reconnect(5)
+        .set_client_id("test-reconnect-client")
+        .set_broker(MOSQUITTO_ADDR);
 
-//     let cb = |m: Message| {
-//         let ref payload = *m.payload;
-//         let ref userdata = *m.userdata.unwrap();
-//         let payload = String::from_utf8(payload.clone()).unwrap();
-//         let userdata = String::from_utf8(userdata.clone()).unwrap();
-//         assert_eq!("MYUNIQUEMESSAGE".to_string(), payload);
-//         assert_eq!("MYUNIQUEUSERDATA".to_string(), userdata);
-//     };
+    let cb = |m: Message| {
+        let ref payload = *m.message.payload;
+        let ref userdata = *m.userdata.unwrap();
+        let payload = String::from_utf8(payload.clone()).unwrap();
+        let userdata = String::from_utf8(userdata.clone()).unwrap();
+        assert_eq!("MYUNIQUEMESSAGE".to_string(), payload);
+        assert_eq!("MYUNIQUEUSERDATA".to_string(), userdata);
+    };
 
-//     let msg_callback = MqttCallback::new().on_message(cb);
+    let msg_callback = MqttCallback::new().on_message(cb);
 
-//     // Connects to a broker and returns a `request`
-// let mut request = MqttClient::start(client_options,
-// Some(msg_callback)).expect("Couldn't start");
-//     request.userdata_publish("test/qos1/ack",
-//                           QoS::AtLeastOnce,
-//                           "MYUNIQUEMESSAGE".to_string().into_bytes(),
-//                           "MYUNIQUEUSERDATA".to_string().into_bytes())
-//         .unwrap();
-//     thread::sleep(Duration::new(1, 0));
-// }
+    // Connects to a broker and returns a `request`
+    let mut request = MqttClient::start(client_options, Some(msg_callback)).expect("Couldn't start");
+    request.userdata_publish("test/qos1/ack",
+                          QoS::AtLeastOnce,
+                          "MYUNIQUEMESSAGE".to_string().into_bytes(),
+                          "MYUNIQUEUSERDATA".to_string().into_bytes()).unwrap();
+    thread::sleep(Duration::new(1, 0));
+}
 
 // #[test]
 // fn will() {
@@ -180,12 +178,12 @@ fn simple_reconnection() {
 
 //     let callback = MqttCallback::new().on_message(cb);
 
-//     // let client1 = MqttClient::start(client_options1, None).expect("Coudn't
-//     // start");
-//     // let mut client2 = MqttClient::start(client_options2,
-//     // Some(callback)).expect("Coudn't start");
+// let client1 = MqttClient::start(client_options1, None).expect("Coudn't
+// start");
+// let mut client2 = MqttClient::start(client_options2,
+// Some(callback)).expect("Coudn't start");
 
-//     // client2.subscribe(vec![("test/will", QoS::AtMostOnce)]).unwrap();
+//     client2.subscribe(vec![("test/will", QoS::AtMostOnce)]).unwrap();
 
 //     // TODO: Now we are waiting for cli-2 subscriber to finish before
 //     // disconnecting
@@ -194,12 +192,12 @@ fn simple_reconnection() {
 //     thread::sleep(Duration::new(1, 0));
 
 //     // LWT doesn't work on graceful disconnects
-//     // client1.disconnect();
-//     // client1.shutdown().unwrap();
+//     client1.disconnect();
+//     client1.shutdown().unwrap();
 
 //     // Wait for last will publish
-//     // thread::sleep(Duration::new(5, 0));
-//     // assert!(1 == final_count.load(Ordering::SeqCst));
+//     thread::sleep(Duration::new(5, 0));
+//     assert!(1 == final_count.load(Ordering::SeqCst));
 // }
 
 /// Broker should retain published message on a topic and

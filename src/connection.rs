@@ -4,6 +4,7 @@ use std::time::{Duration, Instant};
 use std::thread;
 use std::io::{Write, ErrorKind};
 use std::collections::VecDeque;
+use std::sync::Arc;
 
 use threadpool::ThreadPool;
 use error::{Result, Error};
@@ -11,8 +12,31 @@ use clientoptions::MqttOptions;
 use stream::{NetworkStream, SslContext};
 use callbacks::MqttCallback;
 
-use mqtt3::{self, Connect, Connack, ConnectReturnCode, Protocol, Message, PacketIdentifier, QoS, Packet, SubscribeTopic, Subscribe};
+use mqtt3::{self, Connect, Connack, Publish, ConnectReturnCode, Protocol, PacketIdentifier, QoS, Packet, SubscribeTopic, Subscribe};
 // static mut N: i32 = 0;
+
+pub type SubscribeTopics = Vec<(String, QoS)>;
+
+#[derive(Debug, Clone)]
+pub struct Message {
+    pub message: mqtt3::Message,
+    pub userdata: Option<Arc<Vec<u8>>>,
+}
+
+impl Message {
+    pub fn from_pub(publish: Box<Publish>) -> Result<Box<Message>> {
+        let m = mqtt3::Message::from_pub(publish)?;
+        let message = Message {
+            message: *m,
+            userdata: None,
+        };
+        Ok(Box::new(message))
+    }
+
+    pub fn transform(&self, pid: Option<PacketIdentifier>, qos: Option<QoS>) -> Box<Message> {
+        Box::new(Message{ message: *self.message.transform(pid, qos), userdata: None})
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MqttState {
@@ -24,7 +48,7 @@ pub enum MqttState {
 #[derive(Debug)]
 pub enum NetworkRequest {
     Publish(Box<Message>),
-    Subscribe(Vec<(String, QoS)>),
+    Subscribe(Box<SubscribeTopics>),
     Shutdown,
     Disconnect,
 }
@@ -51,7 +75,7 @@ pub struct Connection {
     // clean_session=false will remember subscriptions only till lives.
     // If broker crashes, all its state will be lost (most brokers).
     // client wouldn't want to loose messages after it comes back up again
-    pub subscriptions: VecDeque<Vec<(String, QoS)>>,
+    pub subscriptions: VecDeque<Box<SubscribeTopics>>,
 
     // TODO: subscriptions remember
     pub no_of_reconnections: u32,
@@ -332,12 +356,13 @@ impl Connection {
     }
 
     fn handle_message(&mut self, message: Box<Message>) -> Result<()> {
-        debug!("       Publish {:?} {:?} < {:?} bytes", message.qos, message.topic, message.payload.len());
+        let msg = message.message.clone();
+        debug!("       Publish {:?} {:?} < {:?} bytes", msg.qos, msg.topic, msg.payload.len());
 
-        match message.qos {
+        match msg.qos {
             QoS::AtMostOnce => (),
             QoS::AtLeastOnce => {
-                let pkid = message.pid.unwrap();
+                let pkid = msg.pid.unwrap();
                 self.puback(pkid)?;
             }
             QoS::ExactlyOnce => (),
@@ -357,7 +382,7 @@ impl Connection {
         debug!("*** PubAck --> Pkid({:?})\n--- Publish Queue =\n{:#?}\n\n", pkid, self.outgoing_pub);
         let m = match self.outgoing_pub
             .iter()
-            .position(|x| x.pid == Some(pkid)) {
+            .position(|x| x.message.pid == Some(pkid)) {
             Some(i) => {
                 if let Some(m) = self.outgoing_pub.remove(i) {
                     Some(*m)
@@ -384,20 +409,20 @@ impl Connection {
         Ok(())
     }
 
-    fn publish(&mut self, message: Box<Message>) -> Result<()> {
+    fn publish(&mut self, publish_message: Box<Message>) -> Result<()> {
         let pkid = self.next_pkid();
-        let message = message.transform(Some(pkid), None);
-        let payload_len = message.payload.len();
+        let publish_message = publish_message.transform(Some(pkid), None);
+        let payload_len = publish_message.message.payload.len();
         let mut size_exceeded = false;
 
-        match message.qos {
+        match publish_message.message.qos {
             QoS::AtMostOnce => (),
             QoS::AtLeastOnce => {
                 if payload_len > self.opts.storepack_sz {
                     size_exceeded = true;
                     warn!("Dropping packet: Size limit exceeded");
                 } else {
-                    self.outgoing_pub.push_back(message.clone());
+                    self.outgoing_pub.push_back(publish_message.clone());
                 }
 
                 if self.outgoing_pub.len() > self.opts.pub_q_len as usize * 50 {
@@ -407,8 +432,8 @@ impl Connection {
             QoS::ExactlyOnce => (),
         }
 
-        let packet = Packet::Publish(message.to_pub(None, false));
-        match message.qos {
+        let packet = Packet::Publish(publish_message.message.to_pub(None, false));
+        match publish_message.message.qos {
             QoS::AtMostOnce if !size_exceeded => self.write_packet(packet)?,
             QoS::AtLeastOnce | QoS::ExactlyOnce if !size_exceeded => {
                 if self.state == MqttState::Connected {
@@ -427,7 +452,7 @@ impl Connection {
     }
 
     // TODO: Maintain subscribe pkid queue and check ack status
-    fn subscribe(&mut self, topics: Vec<(String, QoS)>) -> Result<()> {
+    fn subscribe(&mut self, topics: Box<SubscribeTopics>) -> Result<()> {
         let pkid = self.next_pkid();
         let topics = topics.iter()
             .map(|t| {

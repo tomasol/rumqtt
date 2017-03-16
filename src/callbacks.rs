@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use mqtt3::Message;
+use connection::Message;
 
 type MessageSendableFn = Box<Fn(Message) + Send + Sync>;
 type PublishSendableFn = Box<Fn(Message) + Send + Sync>;

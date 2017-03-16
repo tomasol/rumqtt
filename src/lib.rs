@@ -83,6 +83,7 @@ mod callbacks;
 
 pub use error::{Error, Result};
 pub use clientoptions::MqttOptions;
-pub use mqtt3::{QoS, Message};
+pub use mqtt3::QoS;
 pub use client::MqttClient;
 pub use callbacks::MqttCallback;
+pub use connection::Message;

@@ -4,11 +4,11 @@ use std::sync::Arc;
 use std::thread;
 use std::sync::mpsc::{sync_channel, SyncSender};
 
-use mqtt3::{QoS, TopicPath, Message};
+use mqtt3::{self, QoS, TopicPath};
 
 use error::{Result, Error};
 use clientoptions::MqttOptions;
-use connection::{Connection, NetworkRequest};
+use connection::{Connection, NetworkRequest, Message};
 use callbacks::MqttCallback;
 
 use std::time::Duration;
@@ -118,6 +118,7 @@ impl MqttClient {
         //         return Err(Error::InvalidTopic(topic))
         //     }
         // }
+        let topics = Box::new(topics);
         self.nw_request_tx.send(NetworkRequest::Subscribe(topics))?;
         Ok(())
     }
@@ -142,19 +143,24 @@ impl MqttClient {
 
         let topic = TopicPath::from_str(topic.to_string())?;
 
-        let message = Message {
+        let message = mqtt3::Message {
             topic: topic,
             retain: retain,
             qos: qos,
             payload: payload,
             pid: None,
         };
-        let message = Box::new(message);
+
+        let publish = Message {
+            message: message,
+            userdata: userdata,
+        };
+        let publish = Box::new(publish);
 
         // TODO: Check message sanity here and return error if not
         match qos {
             QoS::AtMostOnce | QoS::AtLeastOnce | QoS::ExactlyOnce => {
-                self.nw_request_tx.try_send(NetworkRequest::Publish(message))?
+                self.nw_request_tx.try_send(NetworkRequest::Publish(publish))?
             }
         };
 

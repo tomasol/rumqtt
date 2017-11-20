@@ -25,6 +25,7 @@ install:
 branches:
   only:
   - master
+  - travis_ci
 before_script:
   - sudo cp scripts/mosquitto.conf /etc/mosquitto/conf.d/mosquitto.conf
   - sudo service mosquitto restart

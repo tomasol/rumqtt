@@ -1,10 +1,8 @@
-extern crate cloudpubsub;
+extern crate rumqtt;
 
-use cloudpubsub::{MqttOptions, MqttClient, MqttCallback, Message};
+use rumqtt::{MqttOptions, MqttClient, MqttCallback, Message};
 
-#[macro_use]
 extern crate log;
-extern crate pretty_env_logger;
 
 use std::thread;
 use std::time::Duration;
@@ -58,7 +56,6 @@ fn simple_stress_publish() {
     let count = count.clone();
 
     let cb = move |_: Message| {
-        // println!("ack: {:?}", m.pkid);
         count.fetch_add(1, Ordering::SeqCst);
     };
 
@@ -91,7 +88,6 @@ fn stress_publish_with_reconnections() {
     let count = count.clone();
 
     let cb = move |_: Message| {
-        // println!("ack: {:?}", m.pkid);
         count.fetch_add(1, Ordering::SeqCst);
     };
 

@@ -1,4 +1,4 @@
-extern crate cloudpubsub;
+extern crate rumqtt;
 extern crate pretty_env_logger;
 extern crate rand;
 
@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use rand::{thread_rng, Rng};
 
-use cloudpubsub::{MqttOptions, MqttClient, MqttCallback};
+use rumqtt::{MqttOptions, MqttClient, MqttCallback};
 
 fn main() {
     pretty_env_logger::init().unwrap();

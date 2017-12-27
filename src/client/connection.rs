@@ -16,7 +16,8 @@ use tokio_io::codec::Framed;
 
 use mqtt3::Packet;
 
- use std::io::{Error, ErrorKind};
+use std::io::{Error, ErrorKind};
+use std::net::ToSocketAddrs;
 
 use error::*;
 use mqttopts::{MqttOptions, ReconnectOptions};
@@ -76,7 +77,6 @@ impl Connection {
 
             let (mut sender, receiver) = framed.split();
             let mut commands_tx = self.commands_tx.clone();
-            let mut disconnect_tx = self.commands_tx.clone();
             let receiver = receiver.then(|result| {
                 let commands_tx = &mut commands_tx;
                 let message = match result {
@@ -151,17 +151,27 @@ impl Connection {
 
     fn mqtt_connect(&mut self) -> Result<Framed<TlsStream<TcpStream>, MqttCodec>, ConnectError> {
         // NOTE: make sure that dns resolution happens during reconnection to handle changes in server ip
-        let addr: SocketAddr = self.opts.broker_addr.as_str().parse().unwrap();
+        let addrs: Vec<SocketAddr> = self.opts.broker_addr.as_str().to_socket_addrs()?.collect();
+        let addr = match addrs.get(0) {
+            Some(a) => a,
+            None => {
+                error!("Dns resolve array empty");
+                return Err(ConnectError::DnsResolve("Dns resolve array empty".to_owned()))
+            }
+        };
         let handle = self.reactor.handle();
         let mqtt_state = self.mqtt_state.clone();
         // TODO: Add TLS support with client authentication (ca = roots.pem for iotcore)
-        let root_cert = Certificate::from_der(include_bytes!("ca.der")).unwrap();
+        let root_cert = Certificate::from_der(include_bytes!("roots.der")).unwrap();
         let mut connector = TlsConnector::builder().unwrap();
+        // panics here
         connector.add_root_certificate(root_cert).unwrap();
         let tls_connector = connector.build().unwrap();
-
         let future_response = TcpStream::connect(&addr, &handle).and_then(|connection| {
-            tls_connector.connect_async(&*format!("{}", &addr.ip()), connection).map_err(|_| Error::new(ErrorKind::Other, "TLS Connection error")).and_then(|connection| {
+            tls_connector.connect_async(&*format!("{}", &addr.ip()), connection).map_err(|e| {
+                error!("{:?}", e);
+                Error::new(ErrorKind::Other, "TLS Connection error")
+                }).and_then(|connection| {
             let framed = connection.framed(MqttCodec);
             let connect = mqtt_state.borrow_mut().handle_outgoing_connect();
             let future_mqtt_connect = framed.send(Packet::Connect(connect));

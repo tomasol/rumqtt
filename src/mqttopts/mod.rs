@@ -16,7 +16,6 @@ pub enum SecurityOptions {
     GcloudIotCore((String, String, i64))
 }
 
-
 // TODO: Add getters & make fields private
 
 #[derive(Clone, Debug)]

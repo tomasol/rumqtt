@@ -24,6 +24,10 @@ use client::Request;
 use client::state::MqttState;
 use codec::MqttCodec;
 
+use native_tls::TlsConnector;
+use native_tls::Certificate;
+use tokio_tls::{TlsConnectorExt, TlsStream};
+
 pub struct Connection {
     notifier_tx: stdmpsc::SyncSender<Packet>,
     commands_tx: Sender<Request>,
@@ -145,22 +149,25 @@ impl Connection {
         }
     }
 
-
-    fn mqtt_connect(&mut self) -> Result<Framed<TcpStream, MqttCodec>, ConnectError> {
+    fn mqtt_connect(&mut self) -> Result<Framed<TlsStream<TcpStream>, MqttCodec>, ConnectError> {
         // NOTE: make sure that dns resolution happens during reconnection to handle changes in server ip
         let addr: SocketAddr = self.opts.broker_addr.as_str().parse().unwrap();
         let handle = self.reactor.handle();
         let mqtt_state = self.mqtt_state.clone();
-        
         // TODO: Add TLS support with client authentication (ca = roots.pem for iotcore)
+        let root_cert = Certificate::from_der(include_bytes!("ca.der")).unwrap();
+        let mut connector = TlsConnector::builder().unwrap();
+        connector.add_root_certificate(root_cert).unwrap();
+        let tls_connector = connector.build().unwrap();
 
         let future_response = TcpStream::connect(&addr, &handle).and_then(|connection| {
+            tls_connector.connect_async(&*format!("{}", &addr.ip()), connection).map_err(|_| Error::new(ErrorKind::Other, "TLS Connection error")).and_then(|connection| {
             let framed = connection.framed(MqttCodec);
             let connect = mqtt_state.borrow_mut().handle_outgoing_connect();
             let future_mqtt_connect = framed.send(Packet::Connect(connect));
-
             future_mqtt_connect.and_then(|framed| {
                 framed.into_future().and_then(|(res, stream)| Ok((res, stream))).map_err(|(err, _stream)| err)
+                })
             })
         });
 

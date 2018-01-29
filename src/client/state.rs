@@ -167,7 +167,7 @@ impl MqttState {
         if self.opts.clean_session {
             VecDeque::new()
         } else {
-            self.outgoing_pub.clone().into_iter().map(|publish| Packet::Publish(publish)).collect()
+            self.outgoing_pub.clone().into_iter().map(Packet::Publish).collect()
         }
     }
 
@@ -307,7 +307,6 @@ impl MqttState {
     // }
 
     pub fn handle_disconnect(&mut self) {
-        println!("Handling disconnect");
         self.await_pingresp = false;
         self.connection_status = MqttConnectionStatus::Disconnected;
 

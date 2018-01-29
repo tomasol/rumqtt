@@ -36,6 +36,7 @@ impl MqttClient {
 
         let max_packet_size = opts.max_packet_size;
         let reconnect_config = opts.reconnect;
+        // TODO is this still needed, even on Reconnect timeout provided ?
         let mut sleep_duration = Duration::new(10, 0);
 
         thread::spawn( move || {
@@ -45,12 +46,14 @@ impl MqttClient {
             'reconnect: loop {
                 if let Err(e) = connection.start() {
                     error!("Network connection failed. Error = {:?}", e);
-                    match reconnect_config {
-                        ReconnectOptions::Never => break 'reconnect,
+                }
+                // TODO remove this comment when agreed upon
+                // This should also handle case when client has deliberately disconnected
+                match reconnect_config {
+                        ReconnectOptions::Never => break,
                         ReconnectOptions::AfterFirstSuccess(d) if !initial_connect => sleep_duration = Duration::new(u64::from(d), 0),
                         ReconnectOptions::AfterFirstSuccess(_) => break 'reconnect,
                         ReconnectOptions::Always(d) =>  sleep_duration = Duration::new(u64::from(d), 0),
-                    }
                 }
 
                 initial_connect = false;
@@ -95,6 +98,12 @@ impl MqttClient {
         let subscribe = Subscribe {pid: PacketIdentifier::zero(), topics: sub_topics};
         
         tx.send(Packet::Subscribe(subscribe)).wait()?;
+        Ok(())
+    }
+
+    pub fn disconnect(&mut self) -> Result<(), ClientError> {
+        let tx = &mut self.nw_request_tx;
+        tx.send(Packet::Disconnect).wait()?;
         Ok(())
     }
 }

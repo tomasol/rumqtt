@@ -56,8 +56,8 @@ impl Connection {
     //       in the loop and creating a sender future
     pub fn start(&mut self) -> Result<(), ConnectError> {
         let framed = self.mqtt_connect()?;
-        info!("mqtt connection successful");
-
+        self.mqtt_state.borrow_mut().reset_last_control_at();
+        info!("Connection successful to broker {}", self.opts.broker_addr);
         let (network_reply_tx, mut network_reply_rx) = unsync::mpsc::unbounded::<Packet>();
         let (sender, receiver) = framed.split();
         let mqtt_recv = self.mqtt_network_recv_future(receiver, network_reply_tx.clone());
@@ -93,7 +93,7 @@ impl Connection {
                             }
                         })
                         .forward(sender)
-                        .map(|_| { mqtt_state.borrow_mut().reset_last_control_at();})
+                        .map(|_| ())
                         .or_else(|e| { error!("Network send failed. Error = {:?}", e); future::ok(())});
         
         // join mqtt send and ping timer. continues even if one of the stream ends
@@ -213,7 +213,7 @@ impl Connection {
                 self.reactor.run(network_future)?
             },
             ConnectionMethod::Tls(ca, client_pair) => {
-                let connector = self.new_tls_connector(ca, client_pair, true)?;
+                let connector = self.new_tls_connector(ca, client_pair)?;
           
                 let tls_future = tcp_future.and_then(|tcp| {
                     let tls = connector.connect_async(&domain, tcp);
@@ -228,7 +228,7 @@ impl Connection {
         Ok(network_stream)
     }
 
-    fn new_tls_connector<CA, C, K>(&self, ca: CA, client_pair: Option<(C, K)>, should_verify_ca: bool) -> Result<SslConnector, ConnectError>
+    fn new_tls_connector<CA, C, K>(&self, ca: CA, client_pair: Option<(C, K)>) -> Result<SslConnector, ConnectError>
     where
         CA: AsRef<Path>,
         C: AsRef<Path>,
@@ -240,9 +240,10 @@ impl Connection {
         if let Some((cert, key)) = client_pair {
             tls_builder.set_certificate_file(cert, SslFiletype::PEM)?;
             tls_builder.set_private_key_file(key, SslFiletype::PEM)?;
+            tls_builder.set_verify(SslVerifyMode::PEER);
+        } else {
+            tls_builder.set_verify(SslVerifyMode::NONE);
         }
-
-        tls_builder.set_verify(SslVerifyMode::NONE);
 
         Ok(tls_builder.build())
     }

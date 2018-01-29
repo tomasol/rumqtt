@@ -8,7 +8,7 @@ mod tests {
     use std::time::Duration;
     use std::sync::{Arc, Mutex};
 
-    use self::rumqtt::{MqttOptions, ReconnectOptions, MqttClient, QoS};
+    use self::rumqtt::{MqttOptions, ReconnectOptions, MqttClient, QoS, SecurityOptions, ConnectionMethod};
 
     #[test]
     fn basic_publish_notifications() {
@@ -41,4 +41,63 @@ mod tests {
         // 3 for actual published messages
         assert_eq!(*counter.lock().unwrap(), 7);
     }
+
+    #[test]
+    #[should_panic]
+    fn no_client_id_set() {
+        loggerv::init_with_verbosity(1).unwrap();
+        let mqtt_opts = MqttOptions::new("", "127.0.0.1:8883").unwrap()
+                                    .set_reconnect_opts(ReconnectOptions::Always(10));
+    }
+
+    #[test]
+    #[should_panic]
+    fn client_id_starts_with_whitespace() {
+        loggerv::init_with_verbosity(1).unwrap();
+        let mqtt_opts = MqttOptions::new(" mqtt", "127.0.0.1:8883").unwrap()
+                                    .set_reconnect_opts(ReconnectOptions::Always(10));
+    }
+
+    #[test]
+    fn client_deliberate_disconnects() {
+        loggerv::init_with_verbosity(1).unwrap();
+        let mqtt_opts = MqttOptions::new("clean_session_check", "localhost:8883").unwrap()
+                            .set_reconnect_opts(ReconnectOptions::Never)
+                            .set_clean_session(false)
+                            .set_security_opts(SecurityOptions::None)
+                            .set_connection_method(ConnectionMethod::Tls("/home/creativcoder/certs/ca.cert.pem".into(), None));
+
+        let (mut client, receiver) = MqttClient::start(mqtt_opts);
+        if let Err(e) = client.publish("/devices/RAVI-MAC/events/imu", QoS::AtLeastOnce, vec![1, 2, 3]) {
+            println!("Publish error = {:?}", e);
+        }
+        thread::sleep_ms(4000);
+        // TODO how do we assert here ?
+        client.disconnect();
+    }
+
+    // #[test]
+    // fn clean_session_set_to_false_same_client_on_new_connection_should_retrieve_older_messages() {
+    //     loggerv::init_with_verbosity(1).unwrap();
+
+    //     {
+    //         let mqtt_opts = MqttOptions::new("clean_session_check", "localhost:8883").unwrap()
+    //                                     .set_reconnect_opts(ReconnectOptions::Never)
+    //                                     .set_clean_session(false)
+    //                                     .set_security_opts(SecurityOptions::None)
+    //                                     .set_connection_method(ConnectionMethod::Tls("/home/creativcoder/certs/ca.cert.pem".into(), None));
+
+    //         let (mut client, receiver) = MqttClient::start(mqtt_opts);
+    //         for _ in 0..100 {
+    //             if let Err(e) = client.publish("/devices/RAVI-MAC/events/imu", QoS::AtLeastOnce, vec![1, 2, 3]) {
+    //                 println!("Publish error = {:?}", e);
+    //             }
+    //         }
+
+    //         thread::sleep_ms(4000);
+    //         client.disconnect();
+    //     }
+
+        // TODO init same new connection
+    // }
 }

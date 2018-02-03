@@ -83,8 +83,25 @@ impl Connection {
         let commands_rx = self.commands_rx.by_ref();
         let network_reply_rx = network_reply_rx.by_ref();
 
-        let mqtt_send = last_session_publishes
-                        .chain(commands_rx)
+        let keepalive_timeout = match self.opts.keep_alive {
+            Some(keep_alive) => Timeout::new(Duration::new(keep_alive as u64, 0), &self.reactor.handle()),
+            None => Timeout::new(Duration::new(60, 0), &self.reactor.handle()),
+        };
+
+        let keepalive_timeout = match keepalive_timeout {
+            Ok(k) => k,
+            Err(e) => return Err((ConnectError::Io(e), self.connection_count))
+        };
+
+        let keepalive_timeout = keepalive_timeout.into_stream()
+                                                 .and_then(|_v| {debug!("Sending Pingreq"); future::ok(Packet::Pingreq)})
+                                                 .map_err(|e| ConnectError::Io(e));
+        
+        
+        let publishes = last_session_publishes.chain(commands_rx);
+        // let publishes_with_ping = publishes.select(keepalive_timeout);
+
+        let mqtt_send = publishes
                         .select(network_reply_rx)
                         .map_err(|e| {
                             error!("Receving outgoing message failed. Error = {:?}", e);
@@ -104,15 +121,17 @@ impl Connection {
                                 }
                                 Command::Halt => future::err(ConnectError::Halt)
                             }
-                        })
-                        .forward(sender)
-                        .map(|_| { mqtt_state.borrow_mut().reset_last_control_at();});
+                        });
+                        
+                        
+        let mqtt_send = mqtt_send.select(keepalive_timeout);
+        let mqtt_send = mqtt_send.forward(sender).map(|_v| ());
         
         // join mqtt send and ping timer. continues even if one of the stream ends
-        let mqtt_send_and_ping = ping_timer.map_err(|e| ConnectError::Io(e)).join(mqtt_send).map(|_| ());
+        // let mqtt_send_and_ping = ping_timer.map_err(|e| ConnectError::Io(e)).join(mqtt_send).map(|_| ());
         
         // join all the futures and run the reactor
-        let mqtt_send_and_recv = (mqtt_recv.map_err(|e| ConnectError::Io(e))).select(mqtt_send_and_ping);
+        let mqtt_send_and_recv = (mqtt_recv.map_err(|e| ConnectError::Io(e))).select(mqtt_send);
         
         match self.reactor.run(mqtt_send_and_recv) {
             Ok((v, _next)) => {

@@ -13,7 +13,8 @@ futures = "0.1"
 tokio-core = "0.1"
 tokio-io = "0.1"
 bytes = "0.4"
-mqtt3 = { git = "https://github.com/tekjar/mqtt3" }
+#mqtt3 = { git = "https://github.com/tekjar/mqtt3" }
+mqtt3 = {path = "../mqtt3"}
 chrono = "0.4"
 jsonwebtoken = { version = "4", optional = true }
 serde = "1"

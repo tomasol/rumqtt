@@ -1,5 +1,5 @@
 use std::time::{Duration, Instant};
-use std::collections::VecDeque;
+use std::collections::{VecDeque, HashMap};
 use std::result::Result;
 use std::path::Path;
 
@@ -10,7 +10,6 @@ use error::{PingError, ConnectError, PublishError, PubackError, SubscribeError};
 use packet;
 use MqttOptions;
 use SecurityOptions;
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum MqttConnectionStatus {
@@ -38,7 +37,7 @@ pub struct MqttState {
     last_pkid: PacketIdentifier,
 
     // For QoS 1. Stores outgoing publishes
-    outgoing_pub: VecDeque<(Publish, UserData)>,
+    outgoing_pub: HashMap<PacketIdentifier, (Publish, UserData)>,
     // clean_session=false will remember subscriptions only till lives.
     // Even so, if broker crashes, all its state will be lost (most brokers).
     // client should resubscribe it comes back up again or else the data will
@@ -63,7 +62,7 @@ impl MqttState {
             last_out_control_time: Instant::now(),
             last_in_control_time: Instant::now(),
             last_pkid: PacketIdentifier(0),
-            outgoing_pub: VecDeque::new(),
+            outgoing_pub: HashMap::new(),
             // subscriptions: VecDeque::new(),
         }
     }
@@ -743,6 +742,37 @@ mod test {
         let userdata = mqtt.handle_incoming_puback(PacketIdentifier(3)).unwrap();
         let userdata = userdata.unwrap();
         assert_eq!(userdata, "ghi");
+    }
+
+    #[test]
+    fn reconnection_should_not_create_duplicates_in_queue() {
+        let mqtt_opts = MqttOptions::new("test-id", "127.0.0.1:1883").unwrap();
+        let mut mqtt = MqttState::new(mqtt_opts);
+        mqtt.opts.clean_session = false;
+
+        let publish = Publish {
+            dup: false,
+            qos: QoS::AtLeastOnce,
+            retain: false,
+            pid: None,
+            topic_name: "hello/world".to_owned(),
+            payload: Arc::new(vec![1, 2, 3]),
+        };
+
+        let _ = mqtt.handle_outgoing_publish(publish.clone(), Some("abc".to_owned()));
+        let _ = mqtt.handle_outgoing_publish(publish.clone(), Some("def".to_owned()));
+        let _ = mqtt.handle_outgoing_publish(publish, Some("ghi".to_owned()));
+
+        assert_eq!(mqtt.outgoing_pub.len(), 3);
+
+        let publishes = mqtt.handle_reconnection();
+        println!("{:?}", publishes);
+
+        for (publish, userdata) in publishes {
+            let _ = mqtt.handle_outgoing_mqtt_packet(publish, userdata);
+        }
+
+        assert_eq!(mqtt.outgoing_pub.len(), 0);
     }
 
     #[test]

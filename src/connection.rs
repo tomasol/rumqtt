@@ -365,11 +365,22 @@ impl Connection {
         let handle = self.handle_packet(packet)?;
         match handle {
             HandlePacket::Publish(m) => {
+                let maybe_qos1_pkid = match m.qos {
+                    QoSWithPacketIdentifier::Level0 => { None }
+                    QoSWithPacketIdentifier::Level1(pkid) => { Some(pkid) }
+                    QoSWithPacketIdentifier::Level2(pkid) => {
+                        debug!("Data loss issue #94 for qos2 is not fixed");
+                        None
+                    }
+                };
+
                 if let Some(ref callback) = self.callback {
                     if let Some(ref on_message) = callback.on_message {
-                        let on_message = on_message.clone();
-                        self.pool.execute(move || on_message(*m));
+                        on_message(*m);
                     }
+                }
+                if let Some(pkid) = maybe_qos1_pkid {
+                    self.puback(pkid)?;
                 }
             }
             HandlePacket::PubAck(m) => {
@@ -543,7 +554,6 @@ impl Connection {
         match message.qos {
             QoSWithPacketIdentifier::Level0 => Ok(HandlePacket::Publish(message)),
             QoSWithPacketIdentifier::Level1(pkid) => {
-                self.puback(pkid)?;
                 Ok(HandlePacket::Publish(message))
             }
 

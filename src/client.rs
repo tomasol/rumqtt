@@ -42,8 +42,13 @@ impl MqttClient {
         // This thread handles network reads (coz they are blocking) and
         // and sends them to event loop thread to handle mqtt state.
         thread::spawn(move || -> Result<()> {
-            let _ = connection.run();
-            error!("Network Thread Stopped !!!!!!!!!");
+            loop {
+                let result = connection.run();
+                error!("Network Thread Stopped: {:?}", result);
+                if connection.dont_reconnect {
+                    break;
+                }
+            }
             Ok(())
         });
 
